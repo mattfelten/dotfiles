@@ -12,7 +12,3 @@ export PS1='\[\e[0;35m\]⌘\[\e[0m\] \[\e[0;36m\]\w/\[\e[0m\] \[\e[0;33m\]$(pars
 if [ -f ~/.aliases ]; then
 	. ~/.aliases
 fi
-
-if [ -d ~/ndn ]; then
-	cd ~/ndn
-fi
