@@ -5,7 +5,7 @@ alias fubar='ssh fubar'
 alias g="git"
 
 # Set editor (e)
-if sublime ls &> /dev/null; then
+if [ -f /usr/local/bin/sublime ]; then
 	alias e="sublime"
 else
 	alias e="nano"
