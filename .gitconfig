@@ -1,0 +1,114 @@
+[user]
+	name = Matt Felten
+	email = matt.felten@dreamhost.com
+
+[core]
+	eidtor = nano
+
+[mergetool]
+	keepBackup = true
+	excludesfile = ~/.gitignore
+
+[color]
+	ui = true
+	diff = true
+	pager = true
+	status = auto
+	branch = auto
+
+[alias]
+	co = checkout
+	br = branch
+	st = status
+	ss = status -s
+	uncommit = reset HEAD^
+	assume = update-index --assume-unchanged
+	unassume = update-index --no-assume-unchanged
+	assumed = "!git ls-files -v | grep ^h | cut -c 3-"
+	unassumeall = "!git assumed | xargs git update-index --no-assume-unchanged"
+	diff = diff --word-diff
+
+	; formatted log
+	ls = log --pretty=format:"%C(yellow)%h\\ %C(cyan)%ad%Cred%d\\ %Creset%s%C(magenta)\\ [%cn]" --decorate --date=relative
+	; list aliases
+	la = "!git config -l | grep alias | cut -c 7-"
+
+
+	;; DreamHost
+
+	; git review [branch_for_review]
+	; interface to pushing refs for review to Gerrit
+	; defaults to the tracked remote branch
+	; if the current branch is not tracking anything
+	; then defaults to master
+	review = "!review() {\
+			merge=$1;\
+			[ -z $merge ] && {\
+					branch=$(git for-each-ref --format='%(refname:short)' $(git symbolic-ref HEAD));\
+					merge=$(git config --get branch.$branch.merge | cut -d/ -f3);\
+			};\
+			[ -z $merge ] && merge=master;\
+			git push origin HEAD:refs/for/$merge;\
+	};\
+	review"
+
+	; git track <new_branch> [branch_to_track]
+	; automatically set up a tracking branch
+	; defaults to tracking origin/master
+	track = "!track() {\
+			newbranch=$1;\
+			[ -z $newbranch ] && echo \"Specify a branch\" && exit 1;\
+			trackedbranch=$2;\
+			[ -z $trackedbranch ] && trackedbranch='origin/master';\
+			git checkout -b $newbranch --track $trackedbranch;\
+	};\
+	track"
+
+	; works exactly the same as track, but I found no way to do
+	; start = track
+	start = "!track() {\
+			newbranch=$1;\
+			[ -z $newbranch ] && echo \"Specify a branch\" && exit 1;\
+			trackedbranch=$2;\
+			[ -z $trackedbranch ] && trackedbranch='origin/master';\
+			git checkout -b $newbranch --track $trackedbranch;\
+	};\
+	track"
+
+	; git finish [branch_to_delete]
+	finish = "!finish() {\
+			deletebranch=$1;\
+			[ -z $deletebranch ] &&\
+					deletebranch=$(git for-each-ref --format='%(refname:short)'\
+							$(git symbolic-ref HEAD));\
+			[[ \"$deletebranch\" == 'master' ]] &&\
+					echo \"Can't delete master\" && exit 1;\
+			git checkout master &&\
+			git pull --rebase &&\
+			git branch -D $deletebranch;\
+	};\
+	finish"
+
+	; git create-branch [local] [remote]
+    create-branch = "!create_branch() {\
+            branch_from=$1;\
+            new_branch=$2;\
+            git fetch &&\
+            git push origin $branch_from:refs/heads/$new_branch;\
+    };\
+    create_branch"
+
+
+    ;; git legit
+
+	switch = !legit switch \"$@\"
+	branches = !legit branches
+	sprout = !legit sprout \"$@\"
+	unpublish = !legit unpublish \"$@\"
+	harvest = !legit harvest \"$@\"
+	sync = !legit sync \"$@\"
+	publish = !legit publish \"$@\"
+	graft = !legit graft \"$@\"
+
+[credential]
+	helper = cache
