@@ -3,7 +3,7 @@
 	email = matt.felten@dreamhost.com
 
 [core]
-	eidtor = nano
+	editor = nano
 
 [mergetool]
 	keepBackup = true
