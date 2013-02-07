@@ -19,3 +19,9 @@ function deployfunction() {
 }
 
 alias deploy=deployfunction
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+	alias ls='ls --color=auto'
+	alias grep='grep --color=auto'
+fi
