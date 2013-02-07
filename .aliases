@@ -3,7 +3,13 @@ alias fubar='ssh fubar'
 
 # Shortcuts
 alias g="git"
-alias s="sublime"
+
+# Set editor (e)
+if sublime ls &> /dev/null; then
+	alias e="sublime"
+else
+	alias e="nano"
+fi
 
 # Locations
 alias sites="cd ~/Sites/Projects; ls;"
