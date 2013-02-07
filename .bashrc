@@ -13,6 +13,6 @@ if [ -f ~/.aliases ]; then
 	. ~/.aliases
 fi
 
-if [ -f ~/ndn ]; then
+if [ -d ~/ndn ]; then
 	cd ~/ndn
 fi
