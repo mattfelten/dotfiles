@@ -4,10 +4,10 @@
 
 [core]
 	editor = nano
+	excludesfile = ~/.gitignore
 
 [mergetool]
 	keepBackup = true
-	excludesfile = ~/.gitignore
 
 [color]
 	ui = true
