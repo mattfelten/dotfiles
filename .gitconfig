@@ -21,12 +21,13 @@
 	br = branch
 	st = status
 	ss = status -s
-	uncommit = reset HEAD^
 	assume = update-index --assume-unchanged
 	unassume = update-index --no-assume-unchanged
 	assumed = "!git ls-files -v | grep ^h | cut -c 3-"
 	unassumeall = "!git assumed | xargs git update-index --no-assume-unchanged"
 	diff = diff --word-diff
+	wc = !git add -A && git commit -m 'Working Commit'
+	uc = reset HEAD^
 
 	; formatted log
 	ls = log --pretty=format:"%C(yellow)%h\\ %C(cyan)%ad%Cred%d\\ %Creset%s%C(magenta)\\ [%cn]" --decorate --date=relative
