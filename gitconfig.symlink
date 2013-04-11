@@ -28,6 +28,7 @@
 	diff = diff --word-diff
 	wc = !git add -A && git commit -m 'Working Commit'
 	uc = reset HEAD^
+	bra = branch -a
 
 	; formatted log
 	ls = log --pretty=format:"%C(yellow)%h\\ %C(cyan)%ad%Cred%d\\ %Creset%s%C(magenta)\\ [%an]" --decorate --date=relative
