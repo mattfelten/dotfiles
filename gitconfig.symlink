@@ -112,3 +112,5 @@
 
 [credential]
 	helper = cache
+[diff]
+	algorithm = patience
