@@ -13,5 +13,9 @@ if [ -f ~/.aliases ]; then
 	. ~/.aliases
 fi
 
+if [ -f /etc/bash_completion ]; then
+	. /etc/bash_completion
+fi
+
 export NODE_PATH="/usr/local/lib/node"
 export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/mysql/bin:/usr/local/share/npm/bin:$PATH"
