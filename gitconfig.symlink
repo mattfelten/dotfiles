@@ -25,7 +25,7 @@
 	a = add
 	ap = add -p
 	c = commit
-	ca = commit --amend --no-edit
+	ca = commit -C HEAD --amend
 
 	assume = update-index --assume-unchanged
 	unassume = update-index --no-assume-unchanged
