@@ -31,7 +31,7 @@
 	bra = branch -a
 
 	; formatted log
-	ls = log --pretty=format:"%C(yellow)%h\\ %C(cyan)%ad%Cred%d\\ %Creset%s%C(magenta)\\ [%an]" --decorate --date=relative
+	ls = log --pretty=format:"%C(yellow)%h\\ %C(cyan)%ad%Cred%d\\ %Creset%s%C(magenta)\\ [%an]" --decorate --date=relative -20
 	; list aliases
 	la = "!git config -l | grep alias | cut -c 7-"
 
