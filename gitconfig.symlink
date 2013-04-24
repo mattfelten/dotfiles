@@ -107,6 +107,22 @@
     };\
     create_branch"
 
+        ; git rework [<number_of_commits> | <commit_id>]
+        ; shorthand alias to rebase
+        ; git rework 8 -> git rebase -i HEAD~8
+        ; git rework cfd8327 -> git rebase -i cfd8327^
+        rework = "!rework() {\
+                commitid=$1;\
+                [ -z $commitid ] && exit;\
+                {\
+                        [[ $commitid =~ ^[0-9]{1,2}$ ]] && commitid=\"HEAD~$commitid\";\
+                }\
+                        ||\
+                commitid=\"$commitid^\";\
+                git rebase -i $commitid;\
+        };\
+        rework"
+
 
     ;; git legit
 
