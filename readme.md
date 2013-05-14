@@ -1,13 +1,12 @@
-# these are dotfiles
+# These are dotfiles
 
-## install
+## Install
 
 Run this:
 
 ```sh
 git clone https://github.com/mattfelten/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
-. setup
+. ~/.dotfiles/setup
 ```
 
 This will symlink the appropriate files in `.dotfiles` to your home directory.
