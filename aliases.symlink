@@ -3,6 +3,7 @@ alias fubar='ssh fubar'
 
 # Shortcuts
 alias g="git"
+alias td="~/.todo/todo.sh"
 
 # Set editor (e)
 if [ -f /usr/local/bin/sublime ]; then
