@@ -6,8 +6,8 @@ alias g="git"
 alias td="~/.todo/todo.sh"
 
 # Set editor (e)
-if [ -f /usr/local/bin/sublime ]; then
-	alias e="sublime"
+if [ -f /usr/local/bin/subl ]; then
+	alias e="subl"
 else
 	alias e="nano"
 fi
