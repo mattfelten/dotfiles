@@ -3,10 +3,11 @@ alias fubar='ssh fubar'
 
 # Shortcuts
 alias g="git"
+alias td="~/.todo/todo.sh"
 
 # Set editor (e)
-if [ -f /usr/local/bin/sublime ]; then
-	alias e="sublime"
+if [ -f /usr/local/bin/subl ]; then
+	alias e="subl"
 else
 	alias e="nano"
 fi
@@ -14,7 +15,9 @@ fi
 # Locations
 alias sites="cd ~/Sites/Projects; ls;"
 alias templates="cd ~/Sites/Templates; ls;"
-alias dreamhost="cd ~/Sites/DreamHost; ls;"
+
+# SSH Mounts
+alias mount-fubar="cd ~/Sites/Projects; sshfs fubar:/home/matfel/ndn/ ~/Sites/Projects/Fubar/ -o sshfs_sync; echo 'Fubar Mounted'; cd ~/Sites/Projects/Fubar/";
 
 # Hide/show all desktop icons (useful when presenting)
 alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"

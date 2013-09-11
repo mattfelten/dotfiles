@@ -3,3 +3,8 @@ source ~/.bashrc
 if [ -d ~/ndn ]; then
 	cd ~/ndn
 fi
+
+if [ -d ~/.todo ]; then
+	td ls
+fi
+
