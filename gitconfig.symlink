@@ -24,7 +24,7 @@
 	bra = branch -a
 	st = status
 	ss = status -s
-	a = add
+	a = !git add -A && git status
 	aa = add -A
 	ap = add -p
 	c = commit
