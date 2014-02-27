@@ -1,13 +1,10 @@
-PATH=$PATH:$HOME/.rvm/bin:/usr/local/bin # Add RVM to PATH for scripting
+PATH=/usr/local/bin:/usr/local/share/npm/lib/node_modules/less/bin/:$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+export NODE_PATH=/usr/local/share/npm/lib/node_modules/:/usr/local/lib/node_modules:$NODE_PATH;
+export PATH="/usr/local/bin:$PATH"; # For pip to work
 
-# Enable colors
-export CLICOLOR=1
-export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
-
-function parse_git_branch {
-git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1) /'
-}
-export PS1='\[\e[0;35m\]⌘\[\e[0m\] \[\e[0;36m\]\w/\[\e[0m\] \[\e[0;33m\]$(parse_git_branch)\[\e[0m\]'
+if [ -f ~/.prompt_color ]; then
+	. ~/.prompt_color
+fi
 
 if [ -f ~/.aliases ]; then
 	. ~/.aliases
@@ -25,13 +22,5 @@ if [ -f ~/.git-completion.bash ]; then
   . ~/.git-completion.bash
 fi
 
-if test -f ~/.rvm/scripts/rvm; then
-   [ "$(type -t rvm)" = "function" ] || source ~/.rvm/scripts/rvm
-fi
-
-export NODE_PATH="/usr/local/lib/node"
-export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/mysql/bin:/usr/local/share/npm/bin:$PATH"
-
 # github magic
 eval "$(hub alias -s)"
->>>>>>> f4e6e37e574d82f6d23cd8d6b78d99dc622b27df
