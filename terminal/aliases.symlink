@@ -6,9 +6,7 @@ alias g="git"
 alias td="~/.todo/todo.sh"
 
 # Set editor (e)
-if [ -f /usr/local/bin/atom ]; then
-	alias e="atom"
-elif [ -f /usr/local/bin/subl ]; then
+if [ -f /usr/local/bin/subl ]; then
 	alias e="subl"
 else
 	alias e="nano"
@@ -26,17 +24,26 @@ function fubarfunction() {
 		fubarfunction unmount
 		sshfs fubar:/home/matfel/ndn/ ~/Sites/Projects/Fubar/ -o sshfs_sync
 		echo 'Fubar Mounted'
-		cd ~/Sites/Projects/Fubar
+		fubarfunction edit
 	elif [ $var1 == 'unmount' ]
 	then
-		if [ $(mount | grep -c fubar) = 1 ]
+		if [ $(mount | grep -c fubar) > 0 ]
 		then
 			umount -f ~/Sites/Projects/Fubar
 			echo 'Fubar Unmounted'
 		fi
+	elif [ $var1 == 'edit' ]
+	then
+		e ~/Sites/Projects/Fubar
 	elif [ $var1 == 'ssh' ]
 	then
 		ssh fubar
+	elif [ $var1 == 'm' ]
+	then
+		fubarfunction mount
+	elif [ $var1 == 'e' ]
+	then
+		fubarfunction edit
 	fi
 }
 alias fubar=fubarfunction
