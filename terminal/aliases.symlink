@@ -1,20 +1,29 @@
-# DreamHost
-alias yakko='ssh yakko'
-
 # Shortcuts
-alias g="git"
-alias td="~/.todo/todo.sh"
-
-# Set editor (e)
-if [ -f /usr/local/bin/subl ]; then
-	alias e="subl"
-else
-	alias e="nano"
-fi
+alias g=git
+alias deploy=dploy
 
 # Locations
 alias proj="cd ~/Sites/Projects; ls;"
 alias lib="cd ~/Sites/Libraries; ls;"
+
+# Set editor (e)
+function edit() {
+
+	if [ -f /usr/local/bin/subl ]; then
+		if [ $# -eq 0 ]; then
+			subl .
+		else
+			subl ${1}
+		fi
+	else
+		if [ $# -eq 0 ]; then
+			nano .
+		else
+			nano ${1}
+		fi
+	fi
+}
+alias e=edit
 
 # SSH Mounts
 function fubarfunction() {
@@ -27,7 +36,7 @@ function fubarfunction() {
 		fubarfunction edit
 	elif [ $var1 == 'unmount' ]
 	then
-		if [ $(mount | grep -c fubar) > 0 ]
+		if $(mount | grep -q fubar)
 		then
 			umount -f ~/Sites/Projects/Fubar
 			echo 'Fubar Unmounted'
@@ -51,12 +60,6 @@ alias fubar=fubarfunction
 # Hide/show all desktop icons (useful when presenting)
 alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
 alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
-
-function deployfunction() {
-	dandelion --config=${1-staging}.yaml deploy
-}
-
-alias deploy=dploy
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
