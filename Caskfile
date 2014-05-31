@@ -1,0 +1,14 @@
+# Install OSX applications using Homebrew
+# http://caskroom.io
+# Usage: `brew bundle Caskfile`
+
+install alfred
+install backblaze-downloader
+install balsamiq-mockups
+install bartender
+install dropbox
+install firefox
+install google-chrome
+install rdio
+install sublime-text
+install transmit
