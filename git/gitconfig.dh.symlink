@@ -1,0 +1,80 @@
+;; DreamHost
+
+[alias]
+	; git review [branch_for_review]
+	; interface to pushing refs for review to Gerrit
+	; defaults to the tracked remote branch
+	; if the current branch is not tracking anything
+	; then defaults to master
+	review = "!review() {\
+			merge=$1;\
+			[ -z $merge ] && {\
+					branch=$(git for-each-ref --format='%(refname:short)' $(git symbolic-ref HEAD));\
+					merge=$(git config --get branch.$branch.merge | cut -d/ -f3);\
+			};\
+			[ -z $merge ] && merge=master;\
+			git push origin HEAD:refs/for/$merge;\
+	};\
+	review"
+
+	; git track <new_branch> [branch_to_track]
+	; automatically set up a tracking branch
+	; defaults to tracking origin/master
+	track = "!track() {\
+			newbranch=$1;\
+			[ -z $newbranch ] && echo \"Specify a branch\" && exit 1;\
+			trackedbranch=$2;\
+			[ -z $trackedbranch ] && trackedbranch='origin/master';\
+			git checkout -b $newbranch --track $trackedbranch;\
+	};\
+	track"
+
+	; works exactly the same as track, but I found no way to do
+	; start = track
+	start = "!track() {\
+			newbranch=$1;\
+			[ -z $newbranch ] && echo \"Specify a branch\" && exit 1;\
+			trackedbranch=$2;\
+			[ -z $trackedbranch ] && trackedbranch='origin/master';\
+			git checkout -b $newbranch --track $trackedbranch;\
+	};\
+	track"
+
+	; git finish [branch_to_delete]
+	finish = "!finish() {\
+			deletebranch=$1;\
+			[ -z $deletebranch ] &&\
+					deletebranch=$(git for-each-ref --format='%(refname:short)'\
+							$(git symbolic-ref HEAD));\
+			[[ \"$deletebranch\" == 'master' ]] &&\
+					echo \"Can't delete master\" && exit 1;\
+			git checkout master &&\
+			git pull --rebase &&\
+			git branch -D $deletebranch;\
+	};\
+	finish"
+
+	; git create-branch [local] [remote]
+	create-branch = "!create_branch() {\
+		branch_from=$1;\
+		new_branch=$2;\
+		git fetch &&\
+		git push origin $branch_from:refs/heads/$new_branch;\
+	};\
+	create_branch"
+
+	; git rework [<number_of_commits> | <commit_id>]
+	; shorthand alias to rebase
+	; git rework 8 -> git rebase -i HEAD~8
+	; git rework cfd8327 -> git rebase -i cfd8327^
+	rework = "!rework() {\
+		commitid=$1;\
+		[ -z $commitid ] && exit;\
+		{\
+			[[ $commitid =~ ^[0-9]{1,2}$ ]] && commitid=\"HEAD~$commitid\";\
+		}\
+			||\
+		commitid=\"$commitid^\";\
+		git rebase -i $commitid;\
+	};\
+	rework"

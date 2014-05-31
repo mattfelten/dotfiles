@@ -2,6 +2,10 @@ PATH=/usr/local/bin:/usr/local/share/npm/lib/node_modules/less/bin/:$PATH:$HOME/
 export NODE_PATH=/usr/local/share/npm/lib/node_modules/:/usr/local/lib/node_modules:$NODE_PATH;
 export PATH="/usr/local/bin:$PATH"; # For pip to work
 
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=$HOME/Devel
+source /usr/local/bin/virtualenvwrapper.sh
+
 if [ -f ~/.prompt_color ]; then
 	. ~/.prompt_color
 fi
