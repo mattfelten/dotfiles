@@ -24,6 +24,14 @@ ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
 brew bundle Brewfile
 ```
 
+Install Cask apps
+------------
+Homebrew installed [Cask](http://caskroom.io) which will let us install OSX apps
+
+```bash
+brew bundle Caskfile
+```
+
 Install Node modules
 ------------
 
