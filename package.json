@@ -1,0 +1,8 @@
+{
+	"name" : "dotfiles-setup",
+	"scripts" : {
+		"preinstall": "npm i -g bower & npm i -g dploy"
+	},
+	"version" : "0.0.1",
+	"private": true
+}
