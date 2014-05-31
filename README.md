@@ -12,7 +12,7 @@ OS X defaults
 Lets set some sensible OS X defaults:
 
 ```bash
-./.osx
+. .osx
 ```
 
 Install Homebrew formulae
