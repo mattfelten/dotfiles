@@ -3,7 +3,33 @@ Dotfiles
 
 Wow, such dot. Very file.
 
-Installation
+Dotfiles Installation
+------------
+All you gotta do is cd in and run `rake`. Easy peasy, lemon squeezy.
+
+OS X defaults
+------------
+Lets set some sensible OS X defaults:
+
+```bash
+./.osx
+```
+
+Install Homebrew formulae
+------------
+When setting up a new Mac, we can install some common [Homebrew](http://brew.sh/) formulae (after installing Homebrew, of course):
+
+```bash
+ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+brew bundle Brewfile
+```
+
+Install Node modules
 ------------
 
-All you gotta do is cd in and run `rake`. Easy peasy, lemon squeezy.
+Node & NPM were installed with Homebrew. Lets also install our Node stuff:
+
+```bash
+npm update
+npm install -g
+```

@@ -1,6 +1,24 @@
-PATH=/usr/local/bin:/usr/local/share/npm/lib/node_modules/less/bin/:$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
-export NODE_PATH=/usr/local/share/npm/lib/node_modules/:/usr/local/lib/node_modules:$NODE_PATH;
-export PATH="/usr/local/bin:$PATH"; # For pip to work
+# Lets try not having this for a minute and see if shit breaks
+# PATH=/usr/local/bin:/usr/local/share/npm/lib/node_modules/less/bin/:$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+# export NODE_PATH=/usr/local/share/npm/lib/node_modules/:/usr/local/lib/node_modules:$NODE_PATH;
+# export PATH="/usr/local/bin:$PATH"; # For pip to work
+
+
+# Homebrew
+# ====
+homebrew=/usr/local/bin:/usr/local/sbin
+export PATH=$homebrew:$PATH
+unset homebrew
+
+
+# Include npm-installed binaries
+# ====
+export PATH=$PATH:/usr/local/share/npm/bin
+
+
+# Default Development Directory
+# ====
+export DEVELOPMENT_DIR=$HOME/Development
 
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Devel
@@ -26,9 +44,9 @@ if [ -f ~/.git-completion.bash ]; then
   . ~/.git-completion.bash
 fi
 
-#
-# Check if Github Hub is installed
-#
+
+# Alias hub to git
+# ====
 if [ -f /usr/local/bin/hub ]; then
 	# Alias as git
 	eval "$(hub alias -s)"
