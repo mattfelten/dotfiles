@@ -1,31 +1,12 @@
-# SSH Mounts
-function fubarfunction() {
-	var1=${1-ssh};
-	if [ $var1 == 'mount' ]
-	then
-		fubarfunction unmount
-		sshfs fubar:/home/matfel/ndn/ ~/Sites/Projects/Fubar/ -o sshfs_sync
-		echo 'Fubar Mounted'
-		fubarfunction edit
-	elif [ $var1 == 'unmount' ]
-	then
-		if $(mount | grep -q fubar)
-		then
-			umount -f ~/Sites/Projects/Fubar
-			echo 'Fubar Unmounted'
-		fi
-	elif [ $var1 == 'edit' ]
-	then
-		e ~/Sites/Projects/Fubar
-	elif [ $var1 == 'ssh' ]
-	then
-		ssh fubar
-	elif [ $var1 == 'm' ]
-	then
-		fubarfunction mount
-	elif [ $var1 == 'e' ]
-	then
-		fubarfunction edit
-	fi
+function horizon-push() {
+	rsync -avp --delete ~/Development/horizon/ dhc:horizon-theme/
+	ssh dhc "rsync -avp --delete ~/horizon-theme/ vagrant:horizon-theme/"
+	ssh dhc "ssh vagrant 'cd horizon-theme && make clean develop' "
 }
-alias fubar=fubarfunction
+
+function horizon-pull() {
+	ssh dhc "rsync -avp --delete vagrant:horizon-theme/ ~/horizon-theme/"
+	rsync -avp --delete dhc:horizon-theme/ ~/Development/horizon/
+}
+
+alias horizon-tunnel="ssh dhc 'ssh -i ~/.ssh/bootstrap -L :8080:192.168.121.110:80 vagrant@192.168.121.110 -N'"

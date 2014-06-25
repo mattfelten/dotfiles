@@ -10,6 +10,7 @@ upgrade
 install caskroom/cask/brew-cask
 install git
 install node # This installs `npm` too using the recommended installation method
+install sshfs
 install webkit2png
 
 
