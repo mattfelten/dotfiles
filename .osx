@@ -146,10 +146,10 @@ defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebK
 # ========
 
 # Install Sublime Text settings
-rm "$HOME/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings"
-ln -s "$DEVELOPMENT_DIR/dotfiles/sublime/Preferences.sublime-settings" "$HOME/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings"
-rm "$HOME/Library/Application Support/Sublime Text 2/Packages/User/Package Control.sublime-settings"
-ln -s "$DEVELOPMENT_DIR/dotfiles/sublime/Package Control.sublime-settings" "$HOME/Library/Application Support/Sublime Text 2/Packages/User/Package Control.sublime-settings"
+# rm "$HOME/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings"
+# ln -s "$DEVELOPMENT_DIR/dotfiles/sublime/Preferences.sublime-settings" "$HOME/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings"
+# rm "$HOME/Library/Application Support/Sublime Text 2/Packages/User/Package Control.sublime-settings"
+# ln -s "$DEVELOPMENT_DIR/dotfiles/sublime/Package Control.sublime-settings" "$HOME/Library/Application Support/Sublime Text 2/Packages/User/Package Control.sublime-settings"
 
 echo "Done. Some of these changes might require a logout/restart to take effect."
 
