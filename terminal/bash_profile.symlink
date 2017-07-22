@@ -4,10 +4,8 @@ if [ -f ~/.bashrc ]; then
 	source ~/.bashrc
 fi
 
-# If sshed in to fubar, change to ndn. I hate this but it's useful.
-# ====
-if [ -d ~/ndn ]; then
-	cd ~/ndn
+if [ -f ~/.profile ]; then
+	source ~/.profile
 fi
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*

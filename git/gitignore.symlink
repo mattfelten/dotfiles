@@ -4,3 +4,4 @@
 staging.yaml
 production.yaml
 dploy.yaml
+.sass-cache

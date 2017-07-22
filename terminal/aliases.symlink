@@ -2,17 +2,20 @@
 # ====
 alias g=git
 alias deploy=dploy
-
+alias ..="cd .."
+alias dev="cd $DEVELOPMENT_DIR"
+alias dh="dev && cd dreamhost"
+alias fuck='sudo $(history -p \!\!)'
 
 # Set editor (e)
 # ====
 function edit() {
 
-	if [ -f /usr/local/bin/sublime ]; then
+	if [ -f /usr/local/bin/subl ]; then
 		if [ $# -eq 0 ]; then
-			sublime .
+			subl .
 		else
-			sublime ${1}
+			subl ${1}
 		fi
 	else
 		if [ $# -eq 0 ]; then

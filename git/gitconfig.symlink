@@ -22,29 +22,27 @@
 	interactive = auto
 
 [alias]
-	co = checkout
-	br = branch
-	bra = branch -a
-	st = status
-	ss = status -s
 	a = !git add -A && git status
 	aa = add -A
 	ap = add -p
+	br = branch
+	bra = branch -a
 	c = commit
-	ca = commit -C HEAD --amend
+	ca = commit --amend --no-edit
+	co = checkout
+	gg = grep
+	ls = log --pretty=format:"%C(yellow)%h\\ %C(cyan)%ad%Cred%d\\ %Creset%s%C(magenta)\\ [%an]" --decorate --date=relative -20
+	rv  = review
+	rw = !git reset && git commit --amend
+	st = status
+	ss = status -s
+	uc = reset HEAD^
+	wc = !git add -A && git commit -m 'Working Commit'
 
 	assume = update-index --assume-unchanged
 	unassume = update-index --no-assume-unchanged
 	assumed = "!git ls-files -v | grep ^h | cut -c 3-"
 	unassumeall = "!git assumed | xargs git update-index --no-assume-unchanged"
-
-	wc = !git add -A && git commit -m 'Working Commit'
-	uc = reset HEAD^
-
-	; formatted log
-	ls = log --pretty=format:"%C(yellow)%h\\ %C(cyan)%ad%Cred%d\\ %Creset%s%C(magenta)\\ [%an]" --decorate --date=relative -20
-	; list aliases
-	la = "!git config -l | grep alias | cut -c 7-"
 
     ;; git legit
 	switch = !legit switch \"$@\"
@@ -63,3 +61,7 @@
 	default = simple
 [pull]
 	rebase = true
+[filter "hawser"]
+	clean = git hawser clean %f
+	smudge = git hawser smudge %f
+	required = true

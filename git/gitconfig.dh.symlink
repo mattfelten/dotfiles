@@ -31,14 +31,14 @@
 
 	; works exactly the same as track, but I found no way to do
 	; start = track
-	start = "!track() {\
+	start = "!start() {\
 			newbranch=$1;\
 			[ -z $newbranch ] && echo \"Specify a branch\" && exit 1;\
 			trackedbranch=$2;\
 			[ -z $trackedbranch ] && trackedbranch='origin/master';\
 			git checkout -b $newbranch --track $trackedbranch;\
 	};\
-	track"
+	start"
 
 	; git finish [branch_to_delete]
 	finish = "!finish() {\
@@ -78,3 +78,12 @@
 		git rebase -i $commitid;\
 	};\
 	rework"
+
+	; git bump-cache-tag
+	; create commit bumping HTTP_CACHE_TAG
+	bump-cache-tag = "!bump_cache_tag(){\
+		git reset;\
+		echo \"-{-{ HTTP_CACHE_TAG\n$(date +'%Y%m%d')}-}-\" > web/vars.tp;\
+		git add web/vars.tp;\
+		git commit -m 'Update HTTP_CACHE_TAG';\
+	}; bump_cache_tag"
