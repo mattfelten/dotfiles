@@ -1,32 +1,9 @@
 # Shortcuts
 # ====
 alias g=git
-alias deploy=dploy
 alias ..="cd .."
 alias dev="cd $DEVELOPMENT_DIR"
-alias dh="dev && cd dreamhost"
 alias fuck='sudo $(history -p \!\!)'
-
-# Set editor (e)
-# ====
-function edit() {
-
-	if [ -f /usr/local/bin/subl ]; then
-		if [ $# -eq 0 ]; then
-			subl .
-		else
-			subl ${1}
-		fi
-	else
-		if [ $# -eq 0 ]; then
-			nano .
-		else
-			nano ${1}
-		fi
-	fi
-}
-alias e=edit
-
 
 # Hide/show all desktop icons (useful when presenting)
 # ====
@@ -61,7 +38,3 @@ function google {
         open "http://www.google.com/?q=$search";
     fi
 }
-
-# Load DreamHost Shit
-# ====
-source ~/.aliases.dh

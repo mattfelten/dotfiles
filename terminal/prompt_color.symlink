@@ -1,8 +1,23 @@
-# Enable colors
-export CLICOLOR=1
-export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+#   Add color to terminal
+#   (this is all commented out as I use Mac Terminal Profiles)
+#   from http://osxdaily.com/2012/02/21/add-color-to-the-terminal-in-mac-os-x/
+#   ------------------------------------------------------------
+#   export CLICOLOR=1
+#   export LSCOLORS=ExFxBxDxCxegedabagacad
 
-function parse_git_branch {
-command git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1) /'
+RESET="\[\033[0m\]"
+LBLUE="\[\e[0;36m\]"
+PURPLE="\[\033[0;35m\]"
+YELLOW="\[\033[0;33m\]"
+
+parse_git_branch() {
+     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
-export PS1='\[\e[0;35m\]⌘\[\e[0m\] \[\e[0;36m\]\w/\[\e[0m\] \[\e[0;33m\]$(parse_git_branch)\[\e[0m\]'
+
+line="\n\n"
+line+="$LBLUE\w/$RESET"
+line+="$YELLOW\$(parse_git_branch)$RESET"
+line+=" \n"
+line+="$PURPLE\$$RESET "
+
+export PS1="$line"

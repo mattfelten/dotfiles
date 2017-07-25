@@ -1,13 +1,10 @@
 [user]
 	name = Matt Felten
-	email = matt.felten@dreamhost.com
+	email = m@mattfelten.com
 
 [core]
 	editor = nano
 	excludesfile = ~/.gitignore
-
-[include]
-	path = ~/.gitconfig.dh;
 
 [mergetool]
 	keepBackup = true
@@ -38,11 +35,6 @@
 	ss = status -s
 	uc = reset HEAD^
 	wc = !git add -A && git commit -m 'Working Commit'
-
-	assume = update-index --assume-unchanged
-	unassume = update-index --no-assume-unchanged
-	assumed = "!git ls-files -v | grep ^h | cut -c 3-"
-	unassumeall = "!git assumed | xargs git update-index --no-assume-unchanged"
 
     ;; git legit
 	switch = !legit switch \"$@\"
