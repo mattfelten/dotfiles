@@ -26,6 +26,7 @@
 	bra = branch -a
 	c = commit
 	ca = commit --amend --no-edit
+	cleanup = !git remote prune origin && git gc && git clean -dfx && git stash clear
 	co = checkout
 	gg = grep
 	ls = log --pretty=format:"%C(yellow)%h\\ %C(cyan)%ad%Cred%d\\ %Creset%s%C(magenta)\\ [%an]" --decorate --date=relative -20
@@ -46,6 +47,47 @@
 	publish = !legit publish
 	graft = !legit graft
 	resync = !legit resync
+
+	; `git start <local branch>` automatically tracks origin/master
+	; `git start <local branch> <tracked branch>`
+	start = "!start() {\
+			newbranch=$1;\
+			[ -z $newbranch ] && echo \"Specify a branch\" && exit 1;\
+			trackedbranch=$2;\
+			[ -z $trackedbranch ] && trackedbranch='origin/master';\
+			git checkout -b $newbranch --track $trackedbranch;\
+	};\
+	start"
+
+	; git finish <branch to delete>
+	finish = "!finish() {\
+			deletebranch=$1;\
+			[ -z $deletebranch ] &&\
+					deletebranch=$(git for-each-ref --format='%(refname:short)'\
+							$(git symbolic-ref HEAD));\
+			[[ \"$deletebranch\" == 'master' ]] &&\
+					echo \"Can't delete master\" && exit 1;\
+			git checkout master &&\
+			git pull --rebase &&\
+			git branch -D $deletebranch;\
+	};\
+	finish"
+
+	; git rework [<number_of_commits> | <commit_id>]
+	; shorthand alias to rebase
+	; git rework 8 -> git rebase -i HEAD~8
+	; git rework cfd8327 -> git rebase -i cfd8327^
+	rework = "!rework() {\
+		commitid=$1;\
+		[ -z $commitid ] && exit;\
+		{\
+			[[ $commitid =~ ^[0-9]{1,2}$ ]] && commitid=\"HEAD~$commitid\";\
+		}\
+			||\
+		commitid=\"$commitid^\";\
+		git rebase -i $commitid;\
+	};\
+	rework"
 
 [credential]
 	helper = cache
