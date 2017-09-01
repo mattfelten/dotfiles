@@ -19,22 +19,39 @@
 	interactive = auto
 
 [alias]
-	a = !git add -A && git status
+	## Shorthand
 	aa = add -A
 	ap = add -p
+	co = checkout
 	br = branch
 	bra = branch -a
 	c = commit
-	ca = commit --amend --no-edit
-	cleanup = !git remote prune origin && git gc && git clean -dfx && git stash clear
-	co = checkout
-	gg = grep
-	ls = log --pretty=format:"%C(yellow)%h\\ %C(cyan)%ad%Cred%d\\ %Creset%s%C(magenta)\\ [%an]" --decorate --date=relative -20
-	rv  = review
-	rw = !git reset && git commit --amend
+	g = grep
 	st = status
 	ss = status -s
+
+	## Add all and check status
+	a = !git add -A && git status
+
+	# Get the current branch name (not so useful in itself, but used in other aliases)
+	branch-name = "!git rev-parse --abbrev-ref HEAD"
+
+	## Quick amend without rewording
+	ca = commit --amend --no-edit
+
+	## Remove old branches, clean untracked files, clear stash
+	cleanup = !git remote prune origin && git gc && git clean -dfx && git stash clear
+
+	## Show a list of commits in a branch with coloring
+	ls = log --pretty=format:"%C(yellow)%h\\ %C(cyan)%ad%Cred%d\\ %Creset%s%C(magenta)\\ [%an]" --decorate --date=relative -20
+
+	## Unstage all files and reword commit message
+	rw = !git reset && git commit --amend
+
+	## Uncommit last commit. Keep changes
 	uc = reset HEAD^
+
+	## Create working commit. Use this like stash but permanent to your branch
 	wc = !git add -A && git commit -m 'Working Commit'
 
     ;; git legit
