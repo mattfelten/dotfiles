@@ -3,6 +3,7 @@
 alias g=git
 alias ..="cd .."
 alias dev="cd $DEVELOPMENT_DIR"
+alias st="dev && cd st"
 alias fuck='sudo $(history -p \!\!)'
 
 # Hide/show all desktop icons (useful when presenting)
@@ -17,24 +18,3 @@ if [ -x /usr/bin/dircolors ]; then
 	alias ls='ls --color=auto'
 	alias grep='grep --color=auto'
 fi
-
-
-# Google Shit
-# ====
-
-function google {
-    local search=""
-    for term in "$@"; do
-        if [[ -z "${search:-}" ]]; then
-            search="$term"
-        else
-            search="$search%20$term"
-        fi
-    done
-    if [[ -z "${search:-}" ]]; then
-        echo 'Usage: google something' >&2
-        return 1
-    else
-        open "http://www.google.com/?q=$search";
-    fi
-}

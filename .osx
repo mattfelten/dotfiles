@@ -53,7 +53,7 @@ defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 sudo defaults write com.apple.AppleMultitouchTrackpad Clicking 1
 
 # Set a blazingly fast keyboard repeat rate
-defaults write NSGlobalDomain KeyRepeat -int 0
+defaults write NSGlobalDomain KeyRepeat -int 2
 
 # Disable auto-correct
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
@@ -136,10 +136,10 @@ defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebK
 # ========
 
 # Use a modified version of the Pro theme by default in Terminal.app
-# open "$pm/dotfiles/terminal/paulmillr.terminal"
-# sleep 1 # Wait a bit to make sure the theme is loaded
-# defaults write com.apple.terminal 'Default Window Settings' -string 'paulmillr'
-# defaults write com.apple.terminal 'Startup Window Settings' -string 'paulmillr'
+open "terminal/Tomorrow Night Bright.terminal"
+sleep 1 # Wait a bit to make sure the theme is loaded
+defaults write com.apple.terminal 'Default Window Settings' -string 'Tomorrow Night Bright'
+defaults write com.apple.terminal 'Startup Window Settings' -string 'Tomorrow Night Bright'
 
 
 echo "Done. Some of these changes might require a logout/restart to take effect."
