@@ -26,9 +26,9 @@
 	br = branch
 	bra = branch -a
 	c = commit
-	g = grep
+	g = grep --break --heading --line-number
 	st = status
-	ss = status -s
+	ss = status -sy
 
 	## Add all and check status
 	a = !git add -A && git status
@@ -54,37 +54,28 @@
 	## Create working commit. Use this like stash but permanent to your branch
 	wc = !git add -A && git commit -m 'Working Commit'
 
-    ;; git legit
-	switch = !legit switch
-	branches = !legit branches
-	sprout = !legit sprout
-	unpublish = !legit unpublish
-	harvest = !legit harvest
-	sync = !legit sync
-	publish = !legit publish
-	graft = !legit graft
-	resync = !legit resync
-
-	; `git start <local branch>` automatically tracks origin/master
+	; `git start <local branch>` automatically tracks origin/<default branch>
 	; `git start <local branch> <tracked branch>`
 	start = "!start() {\
+			defaultbranch=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@');\
 			newbranch=$1;\
 			[ -z $newbranch ] && echo \"Specify a branch\" && exit 1;\
 			trackedbranch=$2;\
-			[ -z $trackedbranch ] && trackedbranch='origin/master';\
+			[ -z $trackedbranch ] && trackedbranch='origin/'$defaultbranch;\
 			git checkout -b $newbranch --track $trackedbranch;\
 	};\
 	start"
 
 	; git finish <branch to delete>
 	finish = "!finish() {\
+			defaultbranch=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@');\
 			deletebranch=$1;\
 			[ -z $deletebranch ] &&\
 					deletebranch=$(git for-each-ref --format='%(refname:short)'\
 							$(git symbolic-ref HEAD));\
-			[[ \"$deletebranch\" == 'master' ]] &&\
-					echo \"Can't delete master\" && exit 1;\
-			git checkout master &&\
+			[[ \"$deletebranch\" == \"$defaultbranch\" ]] &&\
+					echo \"Can't delete $defaultbranch\" && exit 1;\
+			git checkout $defaultbranch &&\
 			git pull --rebase &&\
 			git branch -D $deletebranch;\
 	};\
@@ -105,9 +96,15 @@
 		git rebase -i $commitid;\
 	};\
 	rework"
+	undo = !legit undo
+	switch = !legit switch
+	sync = !legit sync
+	publish = !legit publish
+	unpublish = !legit unpublish
+	branches = !legit branches
 
 [credential]
-	helper = cache
+	helper = osxkeychain
 
 [push]
 	default = simple
@@ -117,3 +114,16 @@
 	clean = git hawser clean %f
 	smudge = git hawser smudge %f
 	required = true
+[fetch]
+	prune = true
+[pager]
+	branch = false
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+[credential "https://github.com"]
+	username = mattfelten
+[init]
+	defaultBranch = main
