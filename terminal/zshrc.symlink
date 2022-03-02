@@ -124,3 +124,6 @@ export DEVELOPMENT_DIR=$HOME/Projects
 alias dev="cd $DEVELOPMENT_DIR"
 alias mission="cd $DEVELOPMENT_DIR/mission"
 alias missioncontrol="cd $DEVELOPMENT_DIR/mission/control.missioncloud.com"
+
+# Make sure Python is in path
+export PATH="/opt/homebrew/opt/python@3.10/bin:$PATH"
