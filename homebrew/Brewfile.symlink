@@ -1,28 +1,6 @@
 # Install command-line tools using Homebrew
 # Usage: `brew bundle Brewfile`
 
-# Install OSX tools using Homebrew
-# ====
-tap 'caskroom/cask'
-brew 'hub'
+brew 'gh'
 brew 'legit'
-
-# Add bash completions
-brew 'git'
-brew 'bash-completion'
-
-# Install OSX applications using Homebrew
-# http://caskroom.io
-# Usage: `brew bundle Caskfile`
-# ====
-cask 'qlcolorcode'
-cask 'qlstephen'
-cask 'qlmarkdown'
-cask 'quicklook-json'
-cask 'qlprettypatch'
-cask 'quicklook-csv'
-cask 'qlimagesize'
-cask 'webpquicklook'
-cask 'suspicious-package'
-cask 'quicklookase'
-cask 'qlvideo'
+brew 'pure'

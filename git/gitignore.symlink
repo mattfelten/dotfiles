@@ -1,7 +1,4 @@
 # Mac OS X
 .DS_Store
 .revision
-staging.yaml
-production.yaml
-dploy.yaml
 .sass-cache
