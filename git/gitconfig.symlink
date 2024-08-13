@@ -29,6 +29,9 @@
 	g = grep --break --heading --line-number
 	st = status
 	ss = status -sy
+	mr = "!glab mr create"
+	pr = "!gh pr create"
+	prw = "!gh pr create --web"
 
 	## Add all and check status
 	a = !git add -A && git status
@@ -37,7 +40,7 @@
 	branch-name = "!git rev-parse --abbrev-ref HEAD"
 
 	## Quick amend without rewording
-	ca = commit --amend --no-edit
+	ca = commit --amend --no-edit --no-verify
 
 	## Remove old branches, clean untracked files, clear stash
 	cleanup = !git remote prune origin && git gc && git clean -dfx && git stash clear
@@ -52,7 +55,7 @@
 	uc = reset HEAD^
 
 	## Create working commit. Use this like stash but permanent to your branch
-	wc = !git add -A && git commit -m 'Working Commit'
+	wc = !git add -A && git commit -m 'Working Commit' --no-verify
 
 	; `git start <local branch>` automatically tracks origin/<default branch>
 	; `git start <local branch> <tracked branch>`
@@ -102,6 +105,7 @@
 	publish = !legit publish
 	unpublish = !legit unpublish
 	branches = !legit branches
+	s = switch
 
 [credential]
 	helper = osxkeychain
@@ -127,3 +131,5 @@
 	username = mattfelten
 [init]
 	defaultBranch = main
+[rebase]
+	autoStash = true
