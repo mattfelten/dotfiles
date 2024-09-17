@@ -27,5 +27,4 @@ homebrew:
 
 macos:
 	$(info {\n}⏱️ Updating MacOS!)
-	open ./terminal/Custom.terminal
 	. .macos
