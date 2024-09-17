@@ -3,8 +3,8 @@ define \n
 
 endef
 
-.PHONY: dotfiles ohmyzsh homebrew macos start
-start: homebrew ohmyzsh dotfiles macos
+.PHONY: dotfiles ohmyzsh homebrew macos start nvm
+start: homebrew nvm ohmyzsh dotfiles macos
 	$(info {\n}✨ All done! Some changes may require a restart to start working. Make sure to install nvm manually.)
 
 dotfiles:
@@ -24,6 +24,10 @@ homebrew:
 	brew update
 	brew upgrade
 	brew bundle --global
+
+nvm:
+	$(info {\n}⏱️ Installing NVM!)
+	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 
 macos:
 	$(info {\n}⏱️ Updating MacOS!)
