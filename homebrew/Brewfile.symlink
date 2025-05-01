@@ -3,4 +3,4 @@
 
 brew 'gh'
 brew 'legit'
-brew 'pure'
+brew 'powerlevel10k'

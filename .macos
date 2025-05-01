@@ -132,10 +132,10 @@ defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
 # ========
 
 # Use a modified version of the Pro theme by default in Terminal.app
-open "terminal/Custom.terminal"
+open "terminal/PaulMillrCustom.terminal"
 sleep 1 # Wait a bit to make sure the theme is loaded
-defaults write com.apple.terminal 'Default Window Settings' -string 'Custom'
-defaults write com.apple.terminal 'Startup Window Settings' -string 'Custom'
+defaults write com.apple.terminal 'Default Window Settings' -string 'PaulMillrCustom'
+defaults write com.apple.terminal 'Startup Window Settings' -string 'PaulMillrCustom'
 
 
 echo "Done. Some of these changes might require a logout/restart to take effect."

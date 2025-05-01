@@ -1,0 +1,10 @@
+# Default Development Directory
+# ====
+export DEVELOPMENT_DIR=$HOME/Projects
+
+# Aliases
+# ====
+alias dev="cd $DEVELOPMENT_DIR"
+alias og="cd $DEVELOPMENT_DIR/og"
+alias cl="cd $DEVELOPMENT_DIR/og/component-library"
+alias cds="cl"

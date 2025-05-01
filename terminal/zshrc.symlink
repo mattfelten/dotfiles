@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -101,25 +108,13 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 fpath=($fpath "/Users/mfelten/.zfunctions")
 
-# Set up Pure
-fpath+=/opt/homebrew/share/zsh/site-functions
-PURE_PROMPT_SYMBOL=$
+# Setup Powerlevel10k theme
+source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# Set up prompt
-autoload -U promptinit; promptinit
-
-# Set ZSH prompt theme
-prompt pure
-
-# Default Development Directory
-# ====
-export DEVELOPMENT_DIR=$HOME/Projects
-
-# Aliases
-# ====
-alias dev="cd $DEVELOPMENT_DIR"
-alias mission="cd $DEVELOPMENT_DIR/mission"
-alias mc="cd $DEVELOPMENT_DIR/mission/control.missioncloud.com"
+# Setup custom aliases
+[[ ! -f ~/.aliases ]] || source ~/.aliases
 
 # Paths
 # ====
