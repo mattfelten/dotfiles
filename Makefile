@@ -4,12 +4,14 @@ MAKEFLAGS += --silent
 
 start: homebrew nvm dotfiles macos
 	$(info )
-	$(info ✨ All done! Some changes may require a restart to start working. Make sure to install nvm manually.)
+	$(info ✨ All done! Some changes may require a restart to start working.)
 
 dotfiles:
 	$(info )
 	$(info ⏱️ Linking dotfiles!)
 	rake
+	source ~/.zshrc
+	source ~/.aliases
 
 homebrew:
 	$(info )
@@ -26,6 +28,7 @@ nvm:
 	$(info )
 	$(info ⏱️ Installing NVM!)
 	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+	nvm install --lts --latest-npm --default
 
 macos:
 	$(info )
