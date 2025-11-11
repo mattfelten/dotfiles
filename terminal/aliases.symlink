@@ -1,10 +1,20 @@
+# General
+# ====
+alias g=git
+
 # Default Development Directory
 # ====
 export DEVELOPMENT_DIR=$HOME/Projects
-
-# Aliases
-# ====
 alias dev="cd $DEVELOPMENT_DIR"
-alias og="cd $DEVELOPMENT_DIR/og"
-alias cl="cd $DEVELOPMENT_DIR/og/component-library"
-alias cds="cl"
+
+# Personal
+# ====
+export PERSONAL_DIR=$DEVELOPMENT_DIR/personal
+alias mf="cd $PERSONAL_DIR/mattfelten.com"
+alias rhythm="cd $PERSONAL_DIR/rhythm.studio"
+
+# Mission Cloud
+# ====
+export MISSION_DIR=$DEVELOPMENT_DIR/mission
+alias mission="cd $MISSION_DIR"
+alias mc="cd $MISSION_DIR/control.missioncloud.com"
