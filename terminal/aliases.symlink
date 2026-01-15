@@ -1,6 +1,11 @@
 # General
 # ====
 alias g=git
+alias ..="cd .."
+
+alias addDockSpacer='defaults write com.apple.dock persistent-apps -array-add '\''{"tile-type"="spacer-tile";}'\''; killall Dock'
+
+alias addSmallDockSpacer='defaults write com.apple.dock persistent-apps -array-add '\''{"tile-type"="small-spacer-tile";}'\''; killall Dock'
 
 # Default Development Directory
 # ====

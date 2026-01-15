@@ -2,5 +2,6 @@
 # Usage: `brew bundle Brewfile`
 
 brew 'gh'
-brew 'legit'
+brew 'git-town'
+brew 'glab'
 brew 'powerlevel10k'
