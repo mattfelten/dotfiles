@@ -1,7 +1,7 @@
 # See https://www.git-town.com/configuration-file for details
 
 [branches]
-main = "master"
+main = "main"
 
 [hosting]
 github-connector-type = "gh"
