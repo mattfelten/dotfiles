@@ -1,0 +1,24 @@
+# Install command-line tools using Homebrew
+# Usage: `brew bundle Brewfile`
+
+brew 'gh'
+brew 'git-town'
+brew 'glab'
+brew 'powerlevel10k'
+
+cask "chatgpt"
+cask "claude"
+cask "claude-code"
+cask "cleanshot"
+cask "cursor"
+cask "cursor-cli"
+cask "discord"
+cask "figma"
+cask "firefox"
+cask "google-chrome"
+cask "granola"
+cask "mimestream"
+cask "screen-studio"
+cask "spotify"
+cask "slack"
+cask "visual-studio-code"

@@ -1,7 +1,0 @@
-# Install command-line tools using Homebrew
-# Usage: `brew bundle Brewfile`
-
-brew 'gh'
-brew 'git-town'
-brew 'glab'
-brew 'powerlevel10k'

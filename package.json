@@ -1,24 +1,28 @@
 {
-  "name": "dotfiles-setup",
-  "scripts": {
-    "start": "make",
-    "symlinks": "rake",
-    "osx": ". .osx",
-    "brew": "/usr/bin/ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\" && brew update && brew upgrade && brew bundle --global",
-    "nvm": "mkdir ~/.nvm && curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash"
-  },
-  "version": "0.0.1",
-  "private": true,
-  "description": "Dotfiles ====================",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mattfelten/dotfiles.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/mattfelten/dotfiles/issues"
-  },
-  "homepage": "https://github.com/mattfelten/dotfiles#readme"
+	"name": "dotfiles-setup",
+	"scripts": {
+		"start": "run-s brew nvm symlinks macos",
+		"symlinks": "node ./scripts/symlinks.js",
+		"macos": "node ./scripts/macos.js",
+		"homebrew": "node ./scripts/homebrew.js",
+		"node": "node ./scripts/node.js"
+	},
+	"version": "0.0.1",
+	"private": true,
+	"description": "Dotfiles ====================",
+	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/mattfelten/dotfiles.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/mattfelten/dotfiles/issues"
+	},
+	"homepage": "https://github.com/mattfelten/dotfiles#readme",
+	"dependencies": {
+		"chalk": "^4.1.2",
+		"npm-run-all": "^4.1.5"
+	}
 }
