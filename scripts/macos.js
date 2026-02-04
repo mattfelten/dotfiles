@@ -31,12 +31,34 @@ const scripts = fs
 	.filter((f) => f.endsWith('.sh'))
 	.sort();
 
+const SAFARI_FDA_MESSAGE =
+	'Safari preferences are in a protected container. Grant Full Disk Access to this terminal/app in\n' +
+	'  System Settings → Privacy & Security → Full Disk Access\n' +
+	'then run this script again.';
+
 for (const script of scripts) {
 	const scriptPath = path.join(macosDefaultsDir, script);
 	const name = path.basename(script, '.sh');
+	const isSafari = name === 'safari';
+
+	if (isSafari) {
+		// Safari prefs require Full Disk Access; check before running to show a clear message
+		try {
+			execSync(
+				'defaults write com.apple.Safari HomePage -string "http://calendar.google.com"',
+				{ stdio: 'pipe' },
+			);
+		} catch {
+			console.log(chalk.yellow(`⊘  ${name}`));
+			console.log(chalk.yellow(SAFARI_FDA_MESSAGE));
+			continue;
+		}
+	}
 
 	try {
-		execSync(`bash "${scriptPath}"`, { stdio: 'inherit' });
+		execSync(`bash "${scriptPath}"`, {
+			stdio: isSafari ? 'pipe' : 'inherit',
+		});
 		console.log(chalk.green(`✓  ${name}`));
 	} catch (err) {
 		console.log(chalk.red(`✗  ${name}: ${err.message}`));

@@ -37,6 +37,10 @@ defaults write com.apple.dock show-recents -bool false
 # the Dock to launch apps.
 #defaults write com.apple.dock persistent-apps -array
 
+# persistent-apps and persistent-others are the two arrays that hold the apps and folders in the Dock.
+# defaults write com.apple.dock persistent-apps -array
+# defaults write com.apple.dock persistent-others -array
+
 # Add some spacers to the Dock
 # defaults write com.apple.dock persistent-apps -array-add '{"tile-type"="small-spacer-tile";}';
 # defaults write com.apple.dock persistent-apps -array-add '{"tile-type"="spacer-tile";}';
