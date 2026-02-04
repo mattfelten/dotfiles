@@ -23,6 +23,7 @@ cask "screen-studio"
 cask "spotify"
 cask "slack"
 cask "visual-studio-code"
+cask "zoom" # Ugh
 
 mas "Crouton", id: 1461650987
 mas "Dato", id: 1470584107
