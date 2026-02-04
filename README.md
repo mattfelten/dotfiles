@@ -26,7 +26,9 @@ Or `./scripts/bootstrap.sh` after cloning. For future updates, run `npm start`.
 
 ```
 symlinks/       → Files that get symlinked to ~/
-homebrew/       → Brewfile lives here
+homebrew/       → Brewfile (cross-platform formula), Brewfile.macos (casks + mas, macOS only)
 macos-defaults/ → Shell scripts for macOS settings
 scripts/        → The JS that makes it all go
 ```
+
+On non-macOS (e.g. WSL), only the main Brewfile is used and `npm run macos` is skipped.

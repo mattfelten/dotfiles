@@ -7,6 +7,11 @@ const chalk = require('chalk');
 
 const macosDefaultsDir = path.join(__dirname, '..', 'macos-defaults');
 
+if (process.platform !== 'darwin') {
+	console.log(chalk.gray('Skipping macOS defaults (not running on macOS).'));
+	process.exit(0);
+}
+
 console.log(chalk.blue.bold('\n🍎 Configuring macOS defaults...\n'));
 
 // Request sudo upfront (inherit stdio so user can type password)

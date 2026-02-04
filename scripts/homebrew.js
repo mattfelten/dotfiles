@@ -6,6 +6,7 @@ const fs = require('fs');
 const chalk = require('chalk');
 
 const brewfilePath = path.join(process.cwd(), 'homebrew/Brewfile');
+const brewfileMacosPath = path.join(process.cwd(), 'homebrew/Brewfile.macos');
 
 console.log(chalk.blue.bold('\n🍺 Setting up Homebrew...\n'));
 
@@ -35,13 +36,24 @@ try {
 }
 
 console.log(chalk.gray('Running brew bundle...'));
-const result = spawnSync('brew', ['bundle', '--file', brewfilePath], {
+let result = spawnSync('brew', ['bundle', '--file', brewfilePath], {
 	stdio: 'inherit',
 });
 
 if (result.error || result.status !== 0) {
 	console.log(chalk.red('\n✗  brew bundle failed'));
 	process.exit(result.status || 1);
+}
+
+if (process.platform === 'darwin' && fs.existsSync(brewfileMacosPath)) {
+	console.log(chalk.gray('Running brew bundle (macOS)...'));
+	result = spawnSync('brew', ['bundle', '--file', brewfileMacosPath], {
+		stdio: 'inherit',
+	});
+	if (result.error || result.status !== 0) {
+		console.log(chalk.red('\n✗  brew bundle (macOS) failed'));
+		process.exit(result.status || 1);
+	}
 }
 
 console.log(chalk.blue.bold('\n✨ Done!\n'));

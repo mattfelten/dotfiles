@@ -1,0 +1,31 @@
+# macOS-only: casks and Mac App Store apps
+# Usage: `brew bundle --file homebrew/Brewfile.macos` (run on macOS only)
+
+brew 'mas'
+
+cask "chatgpt"
+cask "claude"
+cask "claude-code"
+cask "cleanshot"
+cask "cursor"
+cask "cursor-cli"
+cask "discord"
+cask "figma"
+cask "firefox"
+cask "google-chrome"
+cask "granola"
+cask "mimestream"
+cask "screen-studio"
+cask "spotify"
+cask "slack"
+cask "visual-studio-code"
+cask "zoom" # Ugh
+
+mas "Crouton", id: 1461650987
+mas "Dato", id: 1470584107
+mas "Ghostery", id: 6504861501
+mas "Hand Mirror", id: 1502839586
+mas "Harvest", id: 506189836
+mas "Lungo", id: 1263070803
+mas "Magnet", id: 441258766
+mas "mymind", id: 1532801185
