@@ -4,21 +4,23 @@ Wow, such dot. Very file.
 
 ## Installation
 
+**First-time setup** (installs NVM + Node if needed, then runs full setup):
+
 ```bash
-npm install && npm start
+bash scripts/bootstrap.sh
 ```
 
-Easy peasy, lemon squeezy.
+Or `./scripts/bootstrap.sh` after cloning. For future updates, run `npm start`.
 
 ## Commands
 
-| Command            | What it do                           |
-| ------------------ | ------------------------------------ |
-| `npm start`        | Run everything below, in order       |
-| `npm run homebrew` | Install Homebrew + Brewfile packages |
-| `npm run node`     | Install nvm + Node                   |
-| `npm run symlinks` | Symlink dotfiles to ~/               |
-| `npm run macos`    | Apply macOS system preferences       |
+| Command              | What it do                                              |
+| -------------------- | ------------------------------------------------------- |
+| `bash scripts/bootstrap.sh` | Run once on fresh clone: NVM/Node + npm install + full setup |
+| `npm start`          | Run everything below, in order (homebrew, symlinks, macos) |
+| `npm run homebrew`   | Install Homebrew + Brewfile packages                    |
+| `npm run symlinks`   | Symlink dotfiles to ~/                                  |
+| `npm run macos`      | Apply macOS system preferences                          |
 
 ## Structure
 

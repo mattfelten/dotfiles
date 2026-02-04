@@ -1,11 +1,11 @@
 {
 	"name": "dotfiles-setup",
 	"scripts": {
-		"start": "run-s brew nvm symlinks macos",
+		"start": "run-s homebrew symlinks macos",
+		"bootstrap": "bash scripts/bootstrap.sh",
 		"symlinks": "node ./scripts/symlinks.js",
 		"macos": "node ./scripts/macos.js",
-		"homebrew": "node ./scripts/homebrew.js",
-		"node": "node ./scripts/node.js"
+		"homebrew": "node ./scripts/homebrew.js"
 	},
 	"version": "0.0.1",
 	"private": true,
