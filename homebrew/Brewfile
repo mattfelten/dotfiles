@@ -5,6 +5,7 @@ brew 'gh'
 brew 'git-town'
 brew 'glab'
 brew 'powerlevel10k'
+brew 'mas'
 
 cask "chatgpt"
 cask "claude"
@@ -22,3 +23,12 @@ cask "screen-studio"
 cask "spotify"
 cask "slack"
 cask "visual-studio-code"
+
+mas "Crouton", id: 1461650987
+mas "Dato", id: 1470584107
+mas "Ghostery", id: 6504861501
+mas "Hand Mirror", id: 1502839586
+mas "Harvest", id: 506189836
+mas "Lungo", id: 1263070803
+mas "Magnet", id: 441258766
+mas "mymind", id: 1532801185
