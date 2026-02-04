@@ -8,8 +8,8 @@
 defaults write com.apple.dock orientation right
 defaults write com.apple.dock pinning -string end
 
-# Set the icon size of Dock items to 24 pixels
-defaults write com.apple.dock tilesize -int 24
+# Set the icon size of Dock items to 40 pixels
+defaults write com.apple.dock tilesize -int 40
 
 # Minimize windows into their application’s icon
 defaults write com.apple.dock minimize-to-application -bool true
@@ -29,14 +29,16 @@ defaults write com.apple.dock autohide -bool false
 # Make Dock icons of hidden applications translucent
 defaults write com.apple.dock showhidden -bool true
 
+# Do not show recent applications in Dock
+defaults write com.apple.dock show-recents -bool false
+
 # Wipe all (default) app icons from the Dock
 # This is only really useful when setting up a new Mac, or if you don’t use
 # the Dock to launch apps.
 #defaults write com.apple.dock persistent-apps -array
 
 # Add some spacers to the Dock
-defaults write com.apple.dock persistent-apps -array-add '{"tile-type"="small-spacer-tile";}';
-defaults write com.apple.dock persistent-apps -array-add '{"tile-type"="small-spacer-tile";}';
+# defaults write com.apple.dock persistent-apps -array-add '{"tile-type"="small-spacer-tile";}';
 # defaults write com.apple.dock persistent-apps -array-add '{"tile-type"="spacer-tile";}';
 
 # Hot corners
