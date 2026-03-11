@@ -1,0 +1,2 @@
+# auto-nvm
+lukechilds/zsh-nvm

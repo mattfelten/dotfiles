@@ -29,3 +29,9 @@ mas "Harvest", id: 506189836
 mas "Lungo", id: 1263070803
 mas "Magnet", id: 441258766
 mas "mymind", id: 1532801185
+
+tap domt4/autoupdate
+brew 'pinentry-mac'
+
+# This needs to run. Autoupdate every 12 hours and on every system boot
+# brew autoupdate start 43200 --upgrade --cleanup --immediate --sudo

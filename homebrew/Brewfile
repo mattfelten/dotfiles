@@ -2,6 +2,7 @@
 # Usage: `brew bundle Brewfile`
 # Cross-platform: formula only (safe on WSL/Linux)
 
+brew 'antidote'
 brew 'gh'
 brew 'git-town'
 brew 'glab'
