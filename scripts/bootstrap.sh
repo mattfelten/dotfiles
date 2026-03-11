@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
+
+trap 'echo "Bootstrap failed at line $LINENO (exit code $?). Check the output above for details." >&2' ERR
 
 # Repo root (parent of scripts/)
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -7,6 +9,7 @@ NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 NVM_INSTALL_URL="https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh"
 
 need_npm_install_and_start() {
+	command -v node &>/dev/null || { echo "ERROR: node not found — nvm install may have failed" >&2; exit 1; }
 	cd "$REPO_ROOT"
 	npm install
 	npm start
@@ -24,8 +27,9 @@ if [ -f "$NVM_DIR/nvm.sh" ]; then
 	echo "NVM found, loading and ensuring Node is installed..."
 	# shellcheck source=/dev/null
 	source "$NVM_DIR/nvm.sh"
+	command -v nvm &>/dev/null || { echo "ERROR: nvm not available after sourcing $NVM_DIR/nvm.sh" >&2; exit 1; }
 	if [ -f "$REPO_ROOT/.nvmrc" ]; then
-		nvm install
+		nvm install "$(cat "$REPO_ROOT/.nvmrc")"
 	else
 		nvm install --default --latest-npm
 	fi
@@ -37,14 +41,15 @@ fi
 # No NVM: install it, then Node, then npm install + npm start
 echo "Installing NVM..."
 export NVM_DIR
-curl -o- "$NVM_INSTALL_URL" | bash
+curl --fail -o- "$NVM_INSTALL_URL" | bash
 
 # shellcheck source=/dev/null
 source "$NVM_DIR/nvm.sh"
+command -v nvm &>/dev/null || { echo "ERROR: nvm not available after sourcing $NVM_DIR/nvm.sh" >&2; exit 1; }
 
 echo "Installing Node..."
 if [ -f "$REPO_ROOT/.nvmrc" ]; then
-	nvm install
+	nvm install "$(cat "$REPO_ROOT/.nvmrc")"
 else
 	nvm install --default --latest-npm
 fi
