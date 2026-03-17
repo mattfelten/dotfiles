@@ -42,3 +42,8 @@ After first-time setup on macOS, enable Homebrew autoupdate manually:
 ```
 brew autoupdate start 43200 --upgrade --cleanup --immediate --sudo
 ```
+
+## Claude Preferences
+
+- Never include `Co-Authored-By` lines in commit messages
+- Never include "Generated with Claude Code" footers in PR descriptions or commit messages
