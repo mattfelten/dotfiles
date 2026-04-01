@@ -3,6 +3,10 @@
 alias g=git
 alias ..="cd .."
 
+# Apps
+# ===
+alias ia='open -a "iA Writer"'
+
 alias addDockSpacer='defaults write com.apple.dock persistent-apps -array-add '\''{"tile-type"="spacer-tile";}'\''; killall Dock'
 
 alias addSmallDockSpacer='defaults write com.apple.dock persistent-apps -array-add '\''{"tile-type"="small-spacer-tile";}'\''; killall Dock'
