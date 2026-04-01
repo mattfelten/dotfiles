@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
-const chalk = require('chalk');
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
+import chalk from 'chalk';
 
-const dotfilesDir = path.join(__dirname, '..', 'symlinks');
+const dotfilesDir = new URL('../symlinks', import.meta.url).pathname;
 const homeDir = os.homedir();
 
 console.log(chalk.blue.bold('\n📁 Setting up dotfile symlinks...\n'));

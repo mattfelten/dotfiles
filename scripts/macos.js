@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-const { execSync, spawnSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const chalk = require('chalk');
+import { execSync, spawnSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import chalk from 'chalk';
 
-const macosDefaultsDir = path.join(__dirname, '..', 'macos-defaults');
+const macosDefaultsDir = new URL('../macos-defaults', import.meta.url).pathname;
 
 if (process.platform !== 'darwin') {
 	console.log(chalk.gray('Skipping macOS defaults (not running on macOS).'));

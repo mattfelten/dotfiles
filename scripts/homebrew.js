@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const { execSync, spawnSync } = require('child_process');
-const path = require('path');
-const fs = require('fs');
-const chalk = require('chalk');
+import { execSync, spawnSync } from 'child_process';
+import path from 'path';
+import fs from 'fs';
+import chalk from 'chalk';
 
 const brewfilePath = path.join(process.cwd(), 'homebrew/Brewfile');
 const brewfileMacosPath = path.join(process.cwd(), 'homebrew/Brewfile.macos');
