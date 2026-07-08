@@ -76,7 +76,6 @@
 	rename = town rename
 	repo = town repo
 	sync = town sync
-	branch = town branch
 	br = town branch
 
 [credential]

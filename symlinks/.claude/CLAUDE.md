@@ -20,10 +20,14 @@ I keep a long-term, git-synced knowledge base at `~/Projects/personal/ai-brain`.
 - **Signal, not noise:** Save what will still matter next month, not transient conversation detail. Extend an existing note instead of duplicating.
 - No need to commit/push — a background job auto-syncs the folder to git.
 
+## Simplification is first-order
+
+When complexity is surfacing as pain, the answer is usually untangling, not adding more structure. Collapse duplicated patterns into canonical sources, delete machinery for problems that haven't materialized, point at existing work before proliferating new files. Bias toward removing surface area when you notice it. New abstractions need to earn their keep; the default move is to simplify.
+
 ## Commits
 
-Never include `Co-Authored-By` lines in commit messages.
-Never include `Generated with Claude Code` footers in PR descriptions or commit messages.
+- Never include `Co-Authored-By` lines in commit messages.
+- Never include `Generated with Claude Code` footers in PR descriptions or commit messages.
 
 ## MCP Servers
 
