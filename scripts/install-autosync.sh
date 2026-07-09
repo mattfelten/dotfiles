@@ -37,13 +37,23 @@ cat > "$PLIST" <<EOF
 EOF
 
 launchctl unload "$PLIST" 2>/dev/null || true
-launchctl load -w "$PLIST"
+launchctl load -w "$PLIST" 2>/dev/null || true
 
-if launchctl list | grep -q "$LABEL"; then
-  echo "Installed and loaded: $LABEL"
-  echo "  repo:  $REPO"
-  echo "  log:   $HOME/Library/Logs/dotfiles-autosync.log"
+# Registration can lag a moment after load, so poll before deciding.
+loaded=""
+for _ in 1 2 3 4 5; do
+  if launchctl list | grep -q "$LABEL"; then loaded=1; break; fi
+  sleep 0.3
+done
+
+echo "Installed: $LABEL"
+echo "  repo:  $REPO"
+echo "  log:   $HOME/Library/Logs/dotfiles-autosync.log"
+if [ -n "$loaded" ]; then
+  echo "  status: loaded and running"
 else
-  echo "ERROR: agent did not load" >&2
-  exit 1
+  # A plist in ~/Library/LaunchAgents loads automatically at next login even if
+  # `launchctl load` couldn't reach the GUI session domain right now.
+  echo "  status: plist written; loads at next login, or run:"
+  echo "          launchctl load -w \"$PLIST\""
 fi
