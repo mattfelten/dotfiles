@@ -32,7 +32,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -n --rawfile c $HOME/Projects/personal/ai-brain/INDEX.md '{hookSpecificOutput:{hookEventName:\"SessionStart\",additionalContext:(\"Persistent knowledge base (\\\"ai-brain\\\") at ~/Projects/personal/ai-brain - long-term git-synced memory shared across all projects. How notes are organized lives in its CONVENTIONS.md (Claude owns the structure). The map of content is below. Consult it when relevant and record durable facts there per the conventions.\\n\\n\" + $c)}}' 2>/dev/null || true",
+            "command": "jq -n --rawfile c $HOME/Projects/personal/ai-brain/INDEX.md '{hookSpecificOutput:{hookEventName:\"SessionStart\",additionalContext:(\"Persistent knowledge base (\\\"ai-brain\\\") at ~/Projects/personal/ai-brain - long-term git-synced memory shared across all projects. How notes are organized lives in its CLAUDE.md (Claude owns the structure). The map of content is below. Consult it when relevant and record durable facts there per the conventions.\\n\\n\" + $c)}}' 2>/dev/null || true",
             "statusMessage": "Loading ai-brain index"
           }
         ]

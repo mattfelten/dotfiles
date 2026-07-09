@@ -27,3 +27,9 @@ alias rhythm="cd $PERSONAL_DIR/rhythm.studio"
 export MISSION_DIR=$DEVELOPMENT_DIR/mission
 alias mission="cd $MISSION_DIR"
 alias mc="cd $MISSION_DIR/control.missioncloud.com"
+alias agents="cd $DEVELOPMENT_DIR && claude agents"
+
+# Default Design Directory
+# ====
+export DESIGN_DIR=$HOME/Design
+alias design="cd $DESIGN_DIR"

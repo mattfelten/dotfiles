@@ -14,9 +14,9 @@ Prefer structure over prose—I'd rather skim to 80% than read paragraphs. Use f
 
 I keep a long-term, git-synced knowledge base at `~/Projects/personal/ai-brain`. Treat it as your shared memory across all projects. Its map of content is auto-injected at session start; the entry point is `INDEX.md`.
 
-- **You own the structure.** How notes are organized — folders, naming, frontmatter — is defined in `~/Projects/personal/ai-brain/CONVENTIONS.md`. Read it before writing, and follow it. I should never have to think about where a note goes.
+- **You own the structure.** How notes are organized — folders, naming, frontmatter — is defined in `~/Projects/personal/ai-brain/CLAUDE.md`. Read it before writing, and follow it. I should never have to think about where a note goes.
 - **Read:** When a task relates to something recorded there, read the relevant note before acting.
-- **Write proactively:** When you learn something durable and reusable — my preferences, decisions and their reasoning, people I work with, project context, useful references — save it per CONVENTIONS.md and add a one-line pointer in `INDEX.md`.
+- **Write proactively:** When you learn something durable and reusable — my preferences, decisions and their reasoning, people I work with, project context, useful references — save it per `~/Projects/personal/ai-brain/CLAUDE.md` and add a one-line pointer in `INDEX.md`.
 - **Signal, not noise:** Save what will still matter next month, not transient conversation detail. Extend an existing note instead of duplicating.
 - No need to commit/push — a background job auto-syncs the folder to git.
 
