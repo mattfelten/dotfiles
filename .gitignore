@@ -1,3 +1,6 @@
 node_modules/
 .claude/settings.local.json
 .claude/worktrees/
+
+# Marketplace-managed skill (20MB, has its own .git) — reinstall per machine, don't vendor it
+symlinks/.claude/skills/taste/
