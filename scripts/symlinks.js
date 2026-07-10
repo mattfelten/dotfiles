@@ -3,11 +3,9 @@
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import { execFileSync } from 'child_process';
 import chalk from 'chalk';
 
-const repoRoot = new URL('..', import.meta.url).pathname;
-const dotfilesDir = path.join(repoRoot, 'symlinks');
+const dotfilesDir = new URL('../symlinks', import.meta.url).pathname;
 const homeDir = os.homedir();
 
 // Directories whose *immediate children* are each symlinked as a whole unit (dir or
@@ -91,20 +89,3 @@ for (const entry of entries) {
 }
 
 console.log(chalk.blue.bold('\n✨ Symlinks done!\n'));
-
-// 3) Install the launchd agent that keeps this repo git-synced (macOS only).
-// Set DOTFILES_NO_AUTOSYNC=1 to skip (CI, testing, or a machine you don't want syncing).
-if (process.env.DOTFILES_NO_AUTOSYNC) {
-	console.log(chalk.gray('Skipping autosync agent (DOTFILES_NO_AUTOSYNC set).'));
-} else if (process.platform === 'darwin') {
-	try {
-		console.log(chalk.blue.bold('⏱  Installing dotfiles autosync agent...\n'));
-		execFileSync('bash', [path.join(repoRoot, 'scripts', 'install-autosync.sh')], {
-			stdio: 'inherit',
-		});
-	} catch (err) {
-		console.log(chalk.red(`⚠  Autosync install failed: ${err.message}`));
-	}
-} else {
-	console.log(chalk.gray('Skipping autosync agent (macOS only).'));
-}

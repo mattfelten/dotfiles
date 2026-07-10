@@ -1,18 +1,17 @@
 #!/usr/bin/env node
 
-// Reverse of symlinks.js: removes only the symlinks that point back into this repo,
-// then uninstalls the dotfiles autosync launchd agent. Real files/dirs are never touched.
+// Reverse of symlinks.js: removes only the symlinks that point back into this repo.
+// Real files/dirs are never touched. (The autosync agent is handled separately —
+// see `npm run autosync:uninstall` / `npm run unlink`.)
 
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import { execFileSync } from 'child_process';
 import chalk from 'chalk';
 
-const repoRoot = new URL('..', import.meta.url).pathname;
-const dotfilesDir = path.join(repoRoot, 'symlinks');
+const dotfilesDir = new URL('../symlinks', import.meta.url).pathname;
 const homeDir = os.homedir();
-const repoReal = fs.realpathSync(repoRoot);
+const repoReal = fs.realpathSync(new URL('..', import.meta.url).pathname);
 
 const MERGE_PARENTS = ['.claude/skills'];
 const underMergeParent = (rel) =>
@@ -74,15 +73,3 @@ for (const entry of entries) {
 }
 
 console.log(chalk.blue.bold('\n✨ Symlinks removed!\n'));
-
-// 3) Uninstall the autosync launchd agent (macOS only).
-if (process.platform === 'darwin') {
-	try {
-		console.log(chalk.blue.bold('⏱  Uninstalling dotfiles autosync agent...\n'));
-		execFileSync('bash', [path.join(repoRoot, 'scripts', 'uninstall-autosync.sh')], {
-			stdio: 'inherit',
-		});
-	} catch (err) {
-		console.log(chalk.red(`⚠  Autosync uninstall failed: ${err.message}`));
-	}
-}
