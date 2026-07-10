@@ -14,21 +14,21 @@ Or `./scripts/bootstrap.sh` after cloning. For future updates, run `npm start`.
 
 ## Commands
 
-| Command              | What it do                                              |
-| -------------------- | ------------------------------------------------------- |
-| `bash scripts/bootstrap.sh` | Run once on fresh clone: NVM/Node + npm install + full setup |
-| `npm start`          | Run full setup in order (homebrew, symlinks, autosync:install, macos) |
-| `npm run homebrew`   | Install Homebrew + Brewfile packages                    |
-| `npm run symlinks`   | Symlink dotfiles to ~/                                  |
-| `npm run unsymlink`  | Remove our symlinks from ~/                             |
-| `npm run autosync:install`   | Install the git autosync launchd agent          |
-| `npm run autosync:uninstall` | Uninstall the git autosync launchd agent        |
-| `npm run unlink`     | Uninstall the autosync agent, then remove symlinks      |
-| `npm run macos`      | Apply macOS system preferences                          |
+| Command                      | What it do                                                    |
+| ---------------------------- | ------------------------------------------------------------- |
+| `bash scripts/bootstrap.sh`  | Run once on fresh clone: NVM/Node + npm install + full setup  |
+| `npm start`                  | Run full setup in order (homebrew, symlinks, autosync, macos) |
+| `npm run homebrew`           | Install Homebrew + Brewfile packages                          |
+| `npm run symlinks`           | Symlink dotfiles to ~/                                        |
+| `npm run unsymlink`          | Remove our symlinks from ~/                                   |
+| `npm run autosync`           | Install the git autosync launchd agent                        |
+| `npm run autosync:uninstall` | Uninstall the git autosync launchd agent                      |
+| `npm run unlink`             | Uninstall the autosync agent, then remove symlinks            |
+| `npm run macos`              | Apply macOS system preferences                                |
 
 ### Git autosync
 
-`npm run autosync:install` installs a launchd agent (`com.mattfelten.dotfiles-autosync`)
+`npm run autosync` installs a launchd agent (`com.mattfelten.dotfiles-autosync`)
 that commits, pulls, and pushes this repo every 10 minutes, so changes travel between
 machines automatically. It's part of `npm start`. Tear it down with `npm run autosync:uninstall`
 (or `npm run unlink` to also remove the symlinks). Logs: `~/Library/Logs/dotfiles-autosync.log`.
