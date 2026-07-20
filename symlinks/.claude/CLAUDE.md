@@ -24,6 +24,21 @@ I keep a long-term, git-synced knowledge base at `~/Projects/personal/ai-brain`.
 
 When complexity is surfacing as pain, the answer is usually untangling, not adding more structure. Collapse duplicated patterns into canonical sources, delete machinery for problems that haven't materialized, point at existing work before proliferating new files. Bias toward removing surface area when you notice it. New abstractions need to earn their keep; the default move is to simplify.
 
+## Code review comments
+
+When drafting code-review / MR comments, write in my voice:
+
+- **Collaborative but decisive.** Prefer "Let's use the shared one." or a plain statement over "I think we should…". Reserve hedging ("Out of scope but I wonder if…", "not necessary though") for optional or out-of-scope ideas.
+- **Serious issues (security, data loss): drop the softening, state the risk directly.**
+- **No leading rhetorical questions** ("Why are we…?"). State the issue directly.
+- **No severity labels** (`Nit —` / `Should-fix —`); mark minor things in prose ("PEDANTIC ALERT:", "out of scope but"). Use ` ```suggestion ` blocks for concrete fixes; "Same" for a repeat issue.
+- **As short as the point allows** — often 1–2 sentences, more when explaining a consequence or tradeoff. State the effect and the fix, not the low-level mechanism. Don't restate what the diff shows.
+- **Plain and literal.** No metaphor ("reaching into", "quietly breaks"), no em-dashes or clever punctuation (commas and periods only, split into sentences). Warm/informal is fine; don't force humor.
+
+e.g. NOT *"Reaching into `SearchInput`… so this breaks if the DOM changes."* INSTEAD *"A ref on the input would be better in case `SearchInput`'s internals change."* And prefer *"…already exports `formatCurrency`. Let's use the shared one."* over *"…so I think we should use the shared one."*
+
+Full guide + examples: `me/review-comment-voice.md` in ai-brain.
+
 ## Commits
 
 - Never include `Co-Authored-By` lines in commit messages.
