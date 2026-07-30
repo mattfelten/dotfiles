@@ -4,8 +4,7 @@
   },
   "permissions": {
     "ask": [
-      "Bash(git worktree remove:*)",
-      "Bash(git branch:*)"
+      "Bash(git worktree remove:*)"
     ],
     "defaultMode": "auto"
   },
