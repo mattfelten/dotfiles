@@ -22,6 +22,9 @@
       }
     ]
   },
+  "worktree": {
+    "baseRef": "fresh"
+  },
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
@@ -39,7 +42,9 @@
     }
   },
   "effortLevel": "high",
+  "awaySummaryEnabled": false,
   "tui": "fullscreen",
   "theme": "auto",
+  "teammateMode": "in-process",
   "skipAutoPermissionPrompt": true
 }
