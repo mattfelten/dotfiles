@@ -12,9 +12,9 @@ testing notes, deploy notes) has to meet a specific trigger to be there at all.
 It also rejects behind-the-scenes narration of how the work happened, which a
 no-context reviewer cannot use.
 
-Fails open. If the judge errors, times out, or answers with anything
-unparseable, the command is allowed through. A style hook must never be the
-reason real work stops.
+If the check itself breaks, the command runs anyway. A timeout, an unreadable
+answer from the model, or a missing `claude` binary all let the MR through
+rather than blocking it. A style hook should never be the reason work stops.
 
 Tuning (env vars):
   MR_STYLE_SKIP=1     bypass entirely for one command
@@ -132,13 +132,14 @@ genuinely met, and never for something the reviewer could work out from the code
    or re-explains the history the ticket already holds. If no issue is linked,
    one to two paragraphs is the ceiling.
 
-6. A SENTENCE THAT HAS TO BE UNPACKED TO GET A SIMPLE IDEA. Most often stacked
-   negatives: "Rejects behind-the-scenes narration a no-context reviewer can't
-   use" carries four negations for one plain point, and the reader has to undo
-   each one. Say it positively instead: "Flags narration of how the work
-   happened. The reviewer wants the change, not the process." Also flag vague
-   openers that do not say anything concrete, like "descriptions had drifted
-   long", where a plain statement of the problem would do.
+6. A SENTENCE THAT HAS TO BE UNPACKED TO GET A SIMPLE IDEA. Almost always
+   stacked negatives: "Rejects behind-the-scenes narration a no-context reviewer
+   can't use" carries four negations for one plain point, and the reader has to
+   undo each one to reach it. Say it positively instead: "Flags narration of how
+   the work happened. The reviewer wants the change, not the process."
+   Judge how hard the sentence is to PARSE, not whether you would have picked
+   different words. A plain sentence that summarises and then elaborates in the
+   next one is fine, that is normal writing. Do not flag it.
 
 7. PROSE THAT SIGNALS THOROUGHNESS WHILE SAYING NOTHING CHECKABLE. "modernize",
    "enhance the overall user experience", "better visual hierarchy",
@@ -226,7 +227,7 @@ If Matt asked for this description as written, re-run with MR_STYLE_SKIP=1 set."
 
 
 def allow():
-    """Stay out of the way: no output, normal permission flow continues."""
+    """Let the command through: no output, normal permission flow continues."""
     sys.exit(0)
 
 
