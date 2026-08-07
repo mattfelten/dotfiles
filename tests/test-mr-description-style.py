@@ -7,7 +7,7 @@ covers is the fiddly part: getting the description out of a shell command.
 import importlib.util, os, shlex, sys, tempfile
 
 HOOK = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                    "..", "symlinks", ".claude", "hooks", "mr-description-style.py")
+                    "..", "symlinks", ".claude", "hooks", "checks", "mr-description-style.py")
 spec = importlib.util.spec_from_file_location("h", HOOK)
 h = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(h)

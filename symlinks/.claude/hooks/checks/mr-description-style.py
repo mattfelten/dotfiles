@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
-"""PreToolUse hook: keep MR/PR descriptions legible to a reviewer.
+"""PreToolUse check: keep MR/PR descriptions legible to a reviewer.
 
-Fires on `gh pr create|edit` and `glab mr create|update`. Pulls the description
+Run by ../dispatch.sh, which only starts it when the command mentions `gh pr`
+or `glab mr` (see checks.conf). Reads the hook payload on stdin. Prints a hook
+JSON response to block, or nothing to let the command through.
+
+Handles `gh pr create|edit` and `glab mr create|update`. Pulls the description
 out of the command, has a model read it the way a reviewer would, and denies the
 tool call with that critique if it doesn't land.
 

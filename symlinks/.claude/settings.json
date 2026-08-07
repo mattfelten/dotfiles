@@ -27,8 +27,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -f \"$HOME/.claude/hooks/mr-description-style.py\" ] || exit 0; python3 \"$HOME/.claude/hooks/mr-description-style.py\"",
-            "statusMessage": "Checking MR description style"
+            "command": "[ -f \"$HOME/.claude/hooks/dispatch.sh\" ] || exit 0; sh \"$HOME/.claude/hooks/dispatch.sh\"",
+            "statusMessage": "Running pre-tool checks"
           }
         ]
       }
