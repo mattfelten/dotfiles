@@ -5,15 +5,12 @@ Fires on `gh pr create|edit` and `glab mr create|update`. Pulls the description
 out of the command, has a model read it the way a reviewer would, and denies the
 tool call with that critique if it doesn't land.
 
-The check is a judgement, not a measurement, because legibility is not word
-count. It asks three things: are the template sections earning their place for a
-change this size, does each bullet carry a single fact, and does the prose say
-anything a reviewer can check. It is calibrated by few-shot against Matt's real
-MRs, and it is given the diff size, since a description always sounds more
-substantial than the change behind it.
-
-Validated against 21 held-out historical MRs: 18 agreed, and the 3 that did not
-were borderline calls the judge arguably got right.
+The check is structural, not a word count. Every description must carry a
+Why/Purpose and a What's Changed written as bullets, one fact each, because a
+reviewer skims a list and has to read a paragraph. Every other section (Gallery,
+testing notes, deploy notes) has to meet a specific trigger to be there at all.
+It also rejects behind-the-scenes narration of how the work happened, which a
+no-context reviewer cannot use.
 
 Fails open. If the judge errors, times out, or answers with anything
 unparseable, the command is allowed through. A style hook must never be the
@@ -23,7 +20,6 @@ Tuning (env vars):
   MR_STYLE_SKIP=1     bypass entirely for one command
   MR_STYLE_MODEL      judge model (default: sonnet; haiku under-flags)
   MR_STYLE_TIMEOUT    seconds to wait for the judge (default: 60)
-  MR_STYLE_DIFFSTAT   override the measured diff size (used by the tests)
 """
 
 import json
@@ -44,135 +40,164 @@ BODY_FLAGS = {"--body", "-b", "--description", "-d", "--notes"}
 FILE_FLAGS = {"--body-file", "-F", "--description-file"}
 TITLE_FLAGS = {"--title", "-t"}
 
-JUDGE_PROMPT = """Matt writes merge request descriptions a particular way. Your job is to tell
-whether a new description reads like HIS writing or like the agent-written ones
-he is trying to stop producing.
+JUDGE_PROMPT = """You are checking a merge request description against the standard Matt holds
+his team to. Answer whether it meets that standard.
 
-This is a matching task, not a quality review. Both sets below are real.
+=== The shape every description must have ===
 
-=== SET A: Matt's own MRs. All of these are ACCEPTABLE. ===
+TWO SECTIONS ARE MANDATORY, on every change, however small, in every repo. If
+the repo has an MR template these are already in it. If it has no template, use
+these headings anyway.
 
-A1: "Tooltips using `asChild` will not trigger on disabled elements. That's how
-disabled works. Pointer events in the browser just don't fire."
+  Why (or Purpose) - what problem or goal this addresses. Prose, not bullets.
+  Length depends on whether an issue is linked:
+    issue linked     -> ONE high-level sentence, and let the ticket carry the
+                        detail. Do not ask for more, and flag a Why that runs to
+                        several paragraphs when the context is already on the
+                        ticket.
+    no issue linked  -> one to two paragraphs at most. This is usually Matt
+                        reworking something because it bugs him, so the design,
+                        aesthetic or UX thinking belongs here. Flag it if it
+                        goes past two paragraphs.
 
-A2: "- Converted 11 components that were still using prop-types to TypeScript
-with proper interfaces
-- Deleted the unused LineGraph propTypes directory
-- Uninstalled the prop-types package"
+  What's Changed - BULLET POINTS. Never paragraphs. One fact per bullet, one
+  line, maybe two. The reviewer must be able to glance down this list, not read
+  it. This is the single most important rule: paragraphs are much harder to
+  read than bullets.
 
-A3: "Three small fixes to the company-name header from !2465:
-1. The name rendered as a blue underlined link, because the color and
-   text-decoration were only on the <a> and mail clients restyle an anchor's
-   descendants. Now forced on the inner span too.
-2. Only render the eyebrow when company_url is present, so the link can't end up
-   with an empty href.
-3. Adds the fields to loop-reopened, DJ's catch on !2465.
-Needs services!4307 for the reopened data."
+EVERY OTHER SECTION MUST EARN ITS WEIGHT. Include one only when its trigger is
+genuinely met, and never for something the reviewer could work out from the code:
 
-A4: "The prod deploy success message duplicated the Changelog link and led with
-an always-'prod' environment parenthetical.
-Before: Mission Control (prod) has been updated to c6103d9e (2.24.4)
-After:  Production Mission Control has been updated to 2.24.4 (c6103d9e)
-- Drops the redundant Changelog link.
-- Drops ($CI_ENVIRONMENT_NAME), this block only runs for prod, so it never said
-  anything but 'prod'."
+  Testing notes  - only if this will be tricky for the reviewer to validate.
+  Gallery        - only for a complex UI change, a narrow UX edge case that is
+                   hard to recreate, or an unexpected or uncommon UI pattern.
+                   Not for a routine visual tweak or a label change.
+  Deploy notes   - only if rolling this out has a dependency of any kind:
+                   timing, feature flag swaps, dependent merges, ordering
+                   against another MR, or a manual step someone must run for the
+                   change to take effect. A plain consequence of merging is not
+                   a dependency, and a one-line limitation does not need its own
+                   section, it can sit at the end of What's Changed.
+  Alternative approaches - optional. One bullet per approach: a sentence on what
+                   was tried, then why it was ruled out.
 
-A5: "Replaces the inline <Breadcrumbs /> child in ContentLayout with a new
-useBreadcrumbParts hook that reads route handle data and passes it to Page's
-native breadcrumbs prop, placing breadcrumbs in the correct header area."
+=== Answer "unclear" if any of these hold ===
 
-Note what Set A does NOT do, and is not penalised for: A2 and A5 never state a
-why, because the change explains itself. A1 never says how the fix works. None
-of them have headers, a test plan, or a summary section. Terse is correct here.
+1. MISSING A MANDATORY SECTION. No Why/Purpose, or no What's Changed. A bare
+   list of changes with no why fails. So does a why with no list of changes.
 
-=== SET B: agent-written. All of these are NOT ACCEPTABLE. ===
+2. WHAT'S CHANGED WRITTEN AS PROSE, OR BULLETS THAT CANNOT BE SKIMMED.
+   Paragraphs where bullets belong.
 
-B1: "### Why
-A production release posted three Slack messages to #mission-control ...
-### What's Changed
-- #mission-control now gets **one** message per release, sent by a new
-  notify_prod_deploy job after Mission Control, Atlas, and Postmark have all
-  deployed. It carries the changelog and the deployed version together.
-- **Drops PROD_DEPLOY_SUCCESS_NOTIFICATION_CHANNELS** in favour of naming
-  channels in the repo. It was set to product-dev-releases/mission-control, and
-  #product-dev-releases has been archived since 2023 — every prod deploy has
-  been logging a channel_not_found warning into a job log nobody reads.
-### How to test
-- [ ] Success -> one payload to #mission-control, 6 blocks ...
-### Deploy notes ..."
+   The test for a bullet is ONE POINT, at most two sentences, readable at a
+   glance. A point may include its cause and its fix. Do NOT split a coherent
+   symptom-cause-fix into separate bullets, and do not count clauses. These are
+   correct and must NOT be flagged:
+     "- The name rendered as a blue underlined link. Colour and text-decoration
+        were only on the <a>, and mail clients restyle an anchor's descendants,
+        so both are now forced on the inner span."
+     "- Drops ($CI_ENVIRONMENT_NAME), this block only runs for prod so it never
+        said anything but 'prod'."
 
-B2: "## Summary
-Major refactoring of the Dashboard feature to modernize the UI, improve
-consistency across widgets, and enhance the overall user experience. This update
-includes redesigned widgets, improved empty states, better loading patterns, and
-comprehensive test coverage updates.
-- More consistent spacing and sizing across all widgets
-- Cleaner, more modern card designs
-- Better visual hierarchy with improved typography"
+   Flag a bullet only when it is genuinely doing too much: several unrelated
+   points, or an argument running past two sentences, so the reviewer has to
+   stop and unpack it. Like this:
+     "- **Drops PROD_DEPLOY_SUCCESS_NOTIFICATION_CHANNELS** in favour of naming
+        channels in the repo. It was set to product-dev-releases/mission-control,
+        and #product-dev-releases has been archived since 2023, so every prod
+        deploy has been logging a channel_not_found warning into a job log nobody
+        reads. Channel names aren't secrets and don't vary by environment, so
+        routing belongs where it gets reviewed."
+   That is four unrelated points and an argument, well past two sentences.
+   Split it, or cut what the reviewer does not need.
 
-What puts these in Set B: stacked section headers standing between the reader and
-the point; bullets that carry three or four facts each and have to be unpacked;
-prose that signals thoroughness while saying nothing checkable ("modernize",
-"enhance the overall user experience", "better visual hierarchy"); test-plan
-checklists; bolded lead-ins on every bullet.
+3. AN OPTIONAL SECTION THAT HAS NOT EARNED ITS TRIGGER. A Gallery for a label
+   change or a routine tweak. Testing notes for something the reviewer can
+   obviously check, or a single trivial box. Deploy notes with no real
+   dependency. A section holding one short line that belonged in What's Changed.
 
-=== What to flag ===
+4. BEHIND-THE-SCENES OR PROCESS CONTENT. Anything that only makes sense to
+   someone who watched the work happen: how an earlier attempt was built and
+   abandoned, what the author tried first, narration of the development process,
+   validation scores, references to a conversation. The reviewer has no context
+   and does not need it. If an abandoned approach is genuinely worth recording,
+   it belongs in Alternative approaches as one bullet, not as narrative.
+   This does NOT cover crediting a colleague ("DJ's catch on !2465"), pointing at
+   a related MR, or noting a limitation of the change. Those are useful to a
+   reviewer and Matt writes them. Do not flag them.
 
-Answer "unclear" if ANY of these three hold. Otherwise answer "clear".
+5. A WHY OUT OF PROPORTION TO THE LINKED ISSUE. You are told below whether one
+   is linked. If it is, the Why should be about one high-level sentence, with
+   the ticket carrying the rest, so flag a Why that runs to multiple paragraphs
+   or re-explains the history the ticket already holds. If no issue is linked,
+   one to two paragraphs is the ceiling.
 
-1. SECTIONS THAT HAVE NOT EARNED THEIR PLACE. The repo template offers a MENU of
-   sections (Why, What's Changed, How to test, Gallery, Scope, Deploy notes).
-   It is not a mandate. The author keeps the ones this change needs and deletes
-   the rest. Matt's changes are usually small, so he deletes most of them.
-   A two-line CSS fix does not need five sections and screenshots.
-
-   You are given the size of the diff. Use it, because a description always
-   sounds more substantial than the change behind it. Rough guide:
-     under ~30 changed lines   -> no headings. Prose or a short list.
-     ~30 to ~150 changed lines -> at most one or two headings.
-     larger                    -> more headings can be justified.
-   Flag when the heading count outruns the change: three or more headings on a
-   change of a couple of hundred lines or fewer is the common case, and it is
-   what Matt is trying to stop. Also flag a heading sitting over a single short
-   line, a "How to test" holding one trivial check, or a Scope / Deploy-notes
-   section for a change that has neither.
-   Do not flag a section that carries something the reviewer genuinely needs.
-
-2. BULLETS CARRYING MORE THAN ONE FACT. Matt's bullets are one line, maybe two,
-   one fact, skimmable. Flag any bullet that stacks several facts with dashes,
-   parentheticals or subordinate clauses, the way B1's bullets do.
-
-3. PROSE THAT SIGNALS THOROUGHNESS WHILE SAYING NOTHING CHECKABLE. "modernize",
+6. PROSE THAT SIGNALS THOROUGHNESS WHILE SAYING NOTHING CHECKABLE. "modernize",
    "enhance the overall user experience", "better visual hierarchy",
-   "comprehensive test coverage updates". Also a description so vague the
-   reviewer learns nothing concrete about what changed.
+   "comprehensive test coverage updates". Or a description so vague the reviewer
+   learns nothing concrete.
 
-=== How much "why" to expect (a modifier, never a reason to fail on its own) ===
+=== Not criteria ===
 
-You are told below whether a Jira ticket is linked.
-- Linked: scope and rationale already live on the issue. A light why, or none at
-  all, is correct. Never ask for more.
-- Not linked: this is usually Matt reworking something because it bugs him, and
-  that is when his reasoning is worth having, the design, aesthetic or UX
-  thinking and the calls he made along the way. If you are ALREADY failing the
-  description on one of the three checks, mention this in "fix". On its own, a
-  missing why is NOT grounds to fail. Set A entries A2 and A5 have none.
+- LENGTH. Never say a description is too long or too short, and never mention
+  word or line count. A long description of well-formed bullets is fine. The
+  fix is never "make it shorter", it is "cut what the reviewer does not need"
+  or "turn that into bullets".
+- The number of sections, judged on its own. Four sections are correct when all
+  four triggers are met. Two are correct when they are not.
+- Screenshots, issue links, markdown style, and repo compliance checklists such
+  as a "Creator Checklist" of process boxes. Ignore those, they are process.
+- Em-dashes and dry asides. He writes that way.
 
-Hard rules:
-- NEVER mention length, word count, or say it is too long or too short. Set A
-  entries run from one line to a dozen. Length is not the signal, and the fix is
-  never "make it shorter", it is "cut what the reviewer does not need".
-- Do NOT ask for a mechanism, a test plan, or more context than a Set A entry
-  has. A bare list of what changed is fine.
-- Ignore screenshots, issue links, markdown formatting, and repo compliance
-  checklists such as a "Creator Checklist" of process boxes. Those are process,
-  not description. Em-dashes and dry asides are fine, he writes that way.
+=== How much "why" to expect ===
+
+You are told whether a Jira ticket is linked. The Why section is required either
+way, but its depth changes:
+- Linked: scope and rationale live on the issue. A brief why is correct. Do not
+  ask for more.
+- Not linked: usually Matt reworking something because it bugs him, and that is
+  when his reasoning matters. Expect the design, aesthetic or UX thinking and
+  the calls made along the way.
+
+=== A description that meets the standard ===
+
+  ### Why
+  The prod deploy success message duplicated the Changelog link, already posted
+  in the message right before it, and led with an always-"prod" environment
+  parenthetical.
+
+  ### What's Changed
+  - Drops the redundant Changelog link.
+  - Drops ($CI_ENVIRONMENT_NAME), this block only runs for prod so it never said
+    anything but "prod".
+  - Leads with "Production" and puts the version first, short SHA in parentheses.
+  - Same change applied to Atlas and the internal #services-debug message.
+
+No Gallery, no testing notes, no deploy notes, because none of those triggers
+were met. Note the bullets: one fact each, skimmable.
+
+=== One that does not ===
+
+  ### Why
+  The 75% coverage thresholds have never been enforced ...
+
+  ### What's Changed
+  Flattens the threshold keys so the gate is real, and adds merge_test_reports
+  to combine the shards' blob reports - a threshold can only be checked on
+  whole-suite coverage, never per shard.
+
+  ### How to test
+  - [x] Pipeline 2731738652 green
+
+What's Changed is a paragraph and should be bullets (check 2), and How to test
+holds one trivial box (check 3). The Why is good.
 
 Respond with JSON and nothing else:
 {"verdict": "clear" | "unclear", "problems": ["..."], "fix": "..."}
 
-Each problem quotes the specific phrase and names which of the three checks it
-fails. At most 4. "fix" is one sentence on what to do instead."""
+Each problem quotes the specific phrase and names which check it fails. At most
+4. "fix" is one sentence on what to do instead."""
+
 
 REASON = """Blocked: a reviewer would have to work to read this description.
 
@@ -180,10 +205,13 @@ REASON = """Blocked: a reviewer would have to work to read this description.
 
 %s
 
-Rewrite the description so a reviewer gets what changed and why on one read,
-then run the command again. This is not about making it shorter. It is about
-making it land. If there is detail worth keeping that does not help the
-reviewer, put it in your reply to Matt instead of the MR body.
+Every description needs a Why/Purpose and a What's Changed written as bullets,
+one fact each. Gallery, testing notes and deploy notes go in only when the
+change actually calls for them.
+
+Rewrite and run the command again. This is not about making it shorter. If there
+is detail worth keeping that does not help the reviewer, put it in your reply to
+Matt instead of the MR body.
 
 Full guide: ~/Projects/personal/ai-brain/me/mr-description-voice.md
 If Matt asked for this description as written, re-run with MR_STYLE_SKIP=1 set."""
@@ -296,54 +324,11 @@ def has_ticket(title, body):
     return bool(TICKET.search("%s\n%s" % (title or "", body or "")))
 
 
-def git(args, cwd):
-    try:
-        p = subprocess.run(["git"] + args, capture_output=True, text=True,
-                           timeout=15, cwd=cwd)
-    except (OSError, subprocess.SubprocessError):
-        return None
-    return p.stdout.strip() if p.returncode == 0 else None
-
-
-def diff_size(command, cwd):
-    """How big is this change? Section count should be proportional to it.
-
-    Whether a change is small is the one fact the description cannot tell the
-    judge, and it is exactly what decides whether five sections are justified.
-    """
-    override = os.environ.get("MR_STYLE_DIFFSTAT")
-    if override:
-        return override
-
-    target = None
-    match = re.search(r"--target-branch[= ]\s*([^\s'\"]+)", command)
-    if match:
-        target = match.group(1)
-
-    candidates = [target] if target else []
-    head = git(["symbolic-ref", "refs/remotes/origin/HEAD"], cwd)
-    if head:
-        candidates.append(head.rsplit("/", 1)[-1])
-    candidates += ["main", "master"]
-
-    for name in candidates:
-        if not name:
-            continue
-        for ref in ("origin/" + name, name):
-            base = git(["merge-base", "HEAD", ref], cwd)
-            if not base:
-                continue
-            stat = git(["diff", "--shortstat", base + "..HEAD"], cwd)
-            if stat:
-                return stat
-    return None
-
-
-def judge(title, body, stat):
+def judge(title, body):
     """Ask the model to read it as a reviewer would. None means 'no opinion'."""
     linked = "yes" if has_ticket(title, body) else "no"
-    text = "Size of the change: %s\nJira ticket linked: %s\n\nTitle: %s\n\nDescription:\n%s" % (
-        stat or "unknown", linked, title or "(none given)", body[:MAX_CHARS])
+    text = "Jira ticket linked: %s\n\nTitle: %s\n\nDescription:\n%s" % (
+        linked, title or "(none given)", body[:MAX_CHARS])
 
     env = dict(os.environ)
     env["MR_STYLE_SKIP"] = "1"  # belt and braces against hook recursion
@@ -396,8 +381,7 @@ def main():
     if not body or not body.strip():
         allow()
 
-    cwd = payload.get("cwd") or os.getcwd()
-    verdict = judge(title, body, diff_size(command, cwd))
+    verdict = judge(title, body)
     if not verdict or verdict.get("verdict") != "unclear":
         allow()
 
