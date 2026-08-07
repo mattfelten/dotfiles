@@ -1,6 +1,6 @@
 ---
 name: cleanup
-description: End-of-conversation close-out. Audits unfinished threads, captures durable knowledge to ai-brain and harness memory, verifies work has actually landed (commits, MRs/PRs, CI, tickets), and tears down worktrees, branches, and anything left running. Use when Matt runs /cleanup, or says he's wrapping up, closing out, or done for the day.
+description: End-of-conversation close-out. Audits unfinished threads, curates ai-brain and harness memory (writing, correcting, and pruning without asking), verifies work has actually landed (commits, MRs/PRs, CI, tickets), and tears down worktrees, branches, and anything left running. Use when Matt runs /cleanup, or says he's wrapping up, closing out, or done for the day.
 metadata:
   version: "1.0.0"
 ---
@@ -13,10 +13,15 @@ wasn't written down, no work stranded on disk, no process still running.
 
 ## The one rule
 
-**Additive actions happen automatically. Destructive and outward-facing actions are gated.**
+**Act freely on memory and on anything reversible. Gate anything that could destroy
+unrecoverable work, and anything other people will see.**
 
-Write memory, update indexes, comment on tickets you already own — just do it. Deleting
-branches or worktrees, closing MRs, force-anything, posting to Slack — propose, then wait.
+Just do it: write, edit, merge, and **delete** memory notes; update indexes; comment on
+tickets you already own.
+
+Propose and wait: removing branches or worktrees, closing MRs, force-anything, posting to
+Slack or anywhere else other people read.
+
 Never delete something whose only copy is the thing being deleted.
 
 ## Arguments
@@ -113,7 +118,14 @@ via the Atlassian MCP. A merged MR with a ticket still in "In Progress" is an op
 
 ---
 
-## Phase 3 — Capture knowledge
+## Phase 3 — Curate knowledge
+
+### You own this. Never ask.
+
+Matt does not manage memory — you do, and that includes deleting. Never ask "should I
+remove this note?" Decide, do it, and report it in Phase 5. Both stores are in git, so a
+deletion you get wrong is recoverable from history; that is what makes this safe to do
+unattended. Treat a run that only *adds* notes as an incomplete run.
 
 Two stores. Route deterministically so they don't duplicate:
 
@@ -128,9 +140,21 @@ Two stores. Route deterministically so they don't duplicate:
 When something belongs in both, the full note goes in ai-brain and the harness memory gets
 a one-line pointer to it.
 
-**Capture corrections, not just additions.** Before writing, search for what already covers
-this. If the session proved an existing note wrong or stale, **fix or delete that note** —
-that's higher value than anything new you'd add. Extend before you create.
+### Curate, don't just append
+
+Before writing anything, search for what already covers it — extend before you create.
+Then do the maintenance pass, every run, whether or not the session produced something new:
+
+- **Delete** notes that are wrong, superseded, or that no future session would benefit from
+  reading. A stale note is worse than a missing one, because it gets trusted.
+- **Correct** notes this session proved wrong. Higher value than anything new you'd add.
+- **Merge** duplicates and near-overlaps into the better-placed of the two, and repoint the
+  inbound `[[wikilinks]]`.
+- **Archive** projects that finished, per ai-brain rule 4, rather than leaving them `active`.
+- **Prune the harness store hard.** Every file there costs context on *every* session in the
+  workspace. A note that no longer earns that slot gets deleted outright, or moved to
+  ai-brain with nothing left behind.
+- Update the enclosing `INDEX.md` for anything removed, moved, or merged.
 
 Ask of the session: what would have saved time if it had been known at the start? That's
 the note. Skip anything the repo, git history, or a `CLAUDE.md` already records, and skip
@@ -189,8 +213,8 @@ Threads      3 found → 1 finished, 1 deferred (PROJ-482), 1 dropped
 Work         2 repos clean · 1 commit pushed
 MRs          !2501 merged (main green) · !2503 open, green, armed, w/ DJ
 Tickets      PROJ-482 created · PROJ-471 → Done
-Memory       ai-brain: work/mission/reference/glab-refusals.md (updated)
-             harness: none
+Memory       ai-brain: +1 note · updated 1 · deleted 2 (stale) · archived 1 project
+             harness: pruned mr-defaults-mission → folded into ai-brain
 Running      stopped 1 dev server, 1 loop
 Teardown     removed 1 worktree + branch · 1 kept (unmerged commits)
 
