@@ -183,9 +183,20 @@ Per worktree/branch created this session, verify *before* proposing deletion tha
 is reachable elsewhere:
 
 ```sh
-git -C <repo> log --oneline <branch> --not --remotes   # commits that exist nowhere else
-git -C <repo> status --porcelain                       # uncommitted work
+git -C <repo> status --porcelain          # uncommitted work
+git -C <repo> diff main <branch>          # read the "+" side: content the branch has and main lacks
 ```
+
+**Use that content diff, not a SHA-based check.** `git log <branch> --not --remotes`,
+`git cherry`, and the three-dot `git diff main...<branch>` all report a branch as holding
+unmerged work when its content is already on `main` — they compare commit identity, and
+autosync (ai-brain, dotfiles) re-commits the same content under new SHAs. Trusting one of
+those on 2026-08-07 nearly duplicated a note into ai-brain.
+
+**Then actually read the `+` lines before calling them "work to save."** They are just as
+often *older* versions of things `main` has since corrected — in the case above, every
+branch-unique line was a superseded note, including one stating a claim `main` had already
+disproved. Superseded content is a reason to delete the branch, not to keep it.
 
 - Clean + merged/pushed → propose removal.
 - **Any** unmerged commits, uncommitted changes, or stashes → do **not** propose deletion.
