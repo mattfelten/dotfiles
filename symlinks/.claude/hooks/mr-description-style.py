@@ -132,7 +132,15 @@ genuinely met, and never for something the reviewer could work out from the code
    or re-explains the history the ticket already holds. If no issue is linked,
    one to two paragraphs is the ceiling.
 
-6. PROSE THAT SIGNALS THOROUGHNESS WHILE SAYING NOTHING CHECKABLE. "modernize",
+6. A SENTENCE THAT HAS TO BE UNPACKED TO GET A SIMPLE IDEA. Most often stacked
+   negatives: "Rejects behind-the-scenes narration a no-context reviewer can't
+   use" carries four negations for one plain point, and the reader has to undo
+   each one. Say it positively instead: "Flags narration of how the work
+   happened. The reviewer wants the change, not the process." Also flag vague
+   openers that do not say anything concrete, like "descriptions had drifted
+   long", where a plain statement of the problem would do.
+
+7. PROSE THAT SIGNALS THOROUGHNESS WHILE SAYING NOTHING CHECKABLE. "modernize",
    "enhance the overall user experience", "better visual hierarchy",
    "comprehensive test coverage updates". Or a description so vague the reviewer
    learns nothing concrete.
