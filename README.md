@@ -43,6 +43,15 @@ Two modes, set by `PUSH_RE` at the top of the script:
   Where the default branch isn't checked out its ref is advanced with `git fetch origin main:main`,
   which git refuses unless it's a clean fast-forward.
 
+When a repo **can't** be synced — fetch failed, tracked files modified, diverged from origin,
+a local file in the way, a push that failed, a detached HEAD or an abandoned rebase — it's recorded
+in `~/Library/Application Support/git-sync/` and shows up in the log. A macOS notification fires only
+once the repo has been stuck for `NOTIFY_AFTER` (default 3h), then at most once a day
+(`NOTIFY_REPEAT`) while it stays stuck, and once more when it starts syncing again. The delay is the
+point: a tree mid-edit, a rebase in progress, or a laptop off wifi all clear on their own, and at a
+10-minute tick an immediate notification would fire ~144 times a day for one stuck repo. Set
+`NOTIFY=0` to turn them off.
+
 Pull-only repos are refreshed at most every 25 minutes (`PULL_MIN_AGE`) even though the agent
 ticks every 10, so a work checkout doesn't get a pile of commits swapped in under a running dev
 server. New clones default to pull mode, which is the safe default.

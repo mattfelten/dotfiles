@@ -11,16 +11,18 @@ Personal dotfiles repo for macOS/WSL. Manages Homebrew packages, symlinked confi
 | Command                     | Purpose                                                                |
 | --------------------------- | ---------------------------------------------------------------------- |
 | `bash scripts/bootstrap.sh` | First-time setup: installs NVM/Node, npm install, then runs full setup |
-| `npm start`                 | Run all setup steps in order (homebrew → symlinks → macos)             |
+| `npm start`                 | Run all setup steps in order (homebrew → symlinks → sync → macos)      |
 | `npm run homebrew`          | Install Homebrew + bundle Brewfiles                                    |
 | `npm run symlinks`          | Symlink files from `symlinks/` to `~/`                                 |
 | `npm run macos`             | Apply macOS defaults (requires sudo, skipped on non-macOS)             |
+| `npm run sync`              | Install the `com.mattfelten.git-sync` launchd agent (see README)       |
+| `npm run sync:uninstall`    | Remove that agent                                                      |
 
 There are no tests or linting configured.
 
 ## Architecture
 
-- **`scripts/`** — Node.js scripts (using `chalk` for output) that orchestrate setup. Each `npm run` command maps to a script here. `bootstrap.sh` is the only bash script; it handles NVM/Node bootstrapping before handing off to npm.
+- **`scripts/`** — Node.js scripts (using `chalk` for output) that orchestrate setup. Each `npm run` command maps to a script here. `bootstrap.sh` handles NVM/Node bootstrapping before handing off to npm; `git-sync.sh` plus its install/uninstall pair are bash and drive the single launchd agent that keeps every checkout under `~/Projects` in sync.
 - **`symlinks/`** — Files and directories that get symlinked directly into `~/` preserving their relative paths. Includes shell config (`.zshrc`, `.aliases`, `.p10k.zsh`), git config, editorconfig, and a `.claude/` directory with global Claude Code settings.
 - **`homebrew/`** — Two Brewfiles: `Brewfile` (cross-platform formulas) and `Brewfile.macos` (casks + Mac App Store apps, macOS only).
 - **`macos-defaults/`** — Individual `.sh` scripts for macOS `defaults write` commands, organized by domain (dock, finder, safari, etc.). Run alphabetically. Safari script requires Full Disk Access.

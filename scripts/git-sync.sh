@@ -33,7 +33,64 @@ PUSH_RE='/(dotfiles|ai-brain)$'
 # 80 commits swapped in under a running dev server every few minutes.
 PULL_MIN_AGE="${PULL_MIN_AGE:-1500}"   # seconds (25 min); override to force a refresh
 
+# A repo that can't be synced is only worth interrupting for once it has *stayed*
+# that way. A tree mid-edit, a rebase in progress, or a laptop off wifi all clear
+# themselves; at a 10-minute tick, notifying immediately would fire ~144 times a
+# day for one stuck repo and train the notification to be ignored.
+NOTIFY="${NOTIFY:-1}"                        # 0 disables notifications entirely
+NOTIFY_AFTER="${NOTIFY_AFTER:-10800}"        # stuck this long (3h) before speaking up
+NOTIFY_REPEAT="${NOTIFY_REPEAT:-86400}"      # then at most once a day while still stuck
+STATE_DIR="${GIT_SYNC_STATE_DIR:-$HOME/Library/Application Support/git-sync}"
+
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*"; }
+
+state_file() { printf '%s/%s.blocked' "$STATE_DIR" "$(printf '%s' "${1#/}" | tr '/' '_')"; }
+
+notify() { # $1 = repo name, $2 = message
+  [ "$NOTIFY" = "1" ] || return 0
+  # Strip characters that would break out of the AppleScript string literal.
+  local name msg
+  name="$(printf '%s' "$1" | tr -d '"\\')"
+  msg="$(printf '%s' "$2" | tr -d '"\\')"
+  osascript -e "display notification \"$msg\" with title \"git-sync\" subtitle \"$name\"" \
+    >/dev/null 2>&1 || true
+}
+
+# Record that a repo can't be synced, and notify once it has persisted.
+problem() { # $1 = repo, $2 = reason
+  local repo="$1" reason="$2" f now first last stuck_h
+  log "$repo: $reason"
+  now="$(date +%s)"
+  mkdir -p "$STATE_DIR" 2>/dev/null || true
+  f="$(state_file "$repo")"
+  if [ -f "$f" ]; then
+    first="$(cut -f1 "$f" 2>/dev/null)"; last="$(cut -f2 "$f" 2>/dev/null)"
+  fi
+  [ -n "${first:-}" ] || first="$now"
+  [ -n "${last:-}" ] || last=0
+
+  if [ $(( now - first )) -ge "$NOTIFY_AFTER" ] && [ $(( now - last )) -ge "$NOTIFY_REPEAT" ]; then
+    stuck_h=$(( (now - first) / 3600 ))
+    notify "$(basename "$repo")" "$reason — stuck ${stuck_h}h"
+    last="$now"
+  fi
+  printf '%s\t%s\t%s\n' "$first" "$last" "$reason" > "$f"
+  return 0
+}
+
+# A repo is syncing again. Only says anything if it was previously stuck, so the
+# healthy path stays silent.
+resolved() { # $1 = repo
+  local repo="$1" f last
+  f="$(state_file "$repo")"
+  [ -f "$f" ] || return 0
+  last="$(cut -f2 "$f" 2>/dev/null || echo 0)"
+  rm -f "$f"
+  log "$repo: syncing again"
+  # Only close the loop if it actually interrupted you in the first place.
+  [ "${last:-0}" != "0" ] && notify "$(basename "$repo")" "syncing again"
+  return 0
+}
 
 # Commit local changes, rebase onto origin, push. Mirrors the behaviour of the
 # autosync agents this replaced.
@@ -46,7 +103,7 @@ sync_push_repo() {
   # merge commits the conflict markers themselves and buries the operation.
   for marker in rebase-merge rebase-apply MERGE_HEAD CHERRY_PICK_HEAD REVERT_HEAD BISECT_LOG; do
     if [ -e "$gitdir/$marker" ]; then
-      log "$repo: $marker present (git operation in progress), left alone"
+      problem "$repo" "$marker present (git operation in progress), left alone"
       return 0
     fi
   done
@@ -56,7 +113,7 @@ sync_push_repo() {
   # garbage-collected — while `push origin HEAD` fails outright.
   branch="$(git -C "$repo" symbolic-ref --quiet --short HEAD 2>/dev/null)" || branch=""
   if [ -z "$branch" ]; then
-    log "$repo: detached HEAD, left alone"
+    problem "$repo" "detached HEAD, left alone"
     return 0
   fi
 
@@ -71,12 +128,17 @@ sync_push_repo() {
 
   if git -C "$repo" push -q origin HEAD 2>/dev/null; then
     [ -n "$committed" ] && log "$repo: committed + pushed ($branch)"
+    resolved "$repo"
   else
     # Only worth reporting if something is actually stranded locally, otherwise a
     # laptop that is merely offline would log on every tick.
     ahead="$(git -C "$repo" rev-list --count "@{upstream}..HEAD" 2>/dev/null || echo 0)"
     if [ -n "$committed" ] || [ "$ahead" != "0" ]; then
-      log "$repo: push to $branch FAILED, $ahead local commit(s) not on origin"
+      problem "$repo" "push to $branch FAILED, $ahead local commit(s) not on origin"
+    else
+      # Push failed but nothing is stranded — everything local is already on
+      # origin, so there is no problem to report.
+      resolved "$repo"
     fi
   fi
   return 0
@@ -96,7 +158,7 @@ refresh_pull_repo() {
   fi
 
   if ! git -C "$repo" fetch --prune --quiet origin 2>/dev/null; then
-    log "$repo: fetch failed"
+    problem "$repo" "fetch failed"
     return 0
   fi
 
@@ -108,30 +170,36 @@ refresh_pull_repo() {
 
   if [ "$head" = "$def" ]; then
     behind="$(git -C "$repo" rev-list --count "HEAD..origin/$def" 2>/dev/null || echo 0)"
-    [ "$behind" = "0" ] && return 0
+    if [ "$behind" = "0" ]; then resolved "$repo"; return 0; fi
     # Only *tracked* changes block the refresh. Untracked files (scratch notes,
     # .env.local, stray build output) accumulate in a working checkout and must not
     # stop it being kept current — git still refuses below if an incoming commit
     # would clobber one of them.
     if [ -n "$(git -C "$repo" status --porcelain --untracked-files=no 2>/dev/null)" ]; then
-      log "$repo: $def is $behind behind, tracked files modified, left alone"
+      problem "$repo" "$def is $behind behind, tracked files modified, left alone"
       return 0
     fi
     if git -C "$repo" merge --ff-only --quiet "origin/$def" 2>/dev/null; then
       log "$repo: $def fast-forwarded $behind commits"
+      resolved "$repo"
     elif git -C "$repo" merge-base --is-ancestor HEAD "origin/$def" 2>/dev/null; then
       # HEAD really is an ancestor, so this was a working-tree obstruction rather
       # than divergence — say which, so the log isn't misleading.
-      log "$repo: $def is $behind behind but a local file is in the way, left alone"
+      problem "$repo" "$def is $behind behind but a local file is in the way, left alone"
     else
-      log "$repo: $def could not fast-forward, diverged from origin/$def"
+      problem "$repo" "$def could not fast-forward, diverged from origin/$def"
     fi
   else
     # Default branch isn't checked out here, so move its ref without a checkout.
     behind="$(git -C "$repo" rev-list --count "$def..origin/$def" 2>/dev/null || echo 0)"
-    [ "$behind" = "0" ] && return 0
+    if [ "$behind" = "0" ]; then resolved "$repo"; return 0; fi
     if git -C "$repo" fetch --quiet origin "$def:$def" 2>/dev/null; then
       log "$repo: $def advanced $behind commits (on ${head:-detached HEAD}, not touched)"
+      resolved "$repo"
+    else
+      # Ref move refused: local $def has commits origin doesn't, so it can never
+      # catch up on its own. Previously this failed silently.
+      problem "$repo" "$def is $behind behind and cannot advance, diverged from origin/$def"
     fi
   fi
   return 0
