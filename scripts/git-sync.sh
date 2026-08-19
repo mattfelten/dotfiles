@@ -38,7 +38,7 @@ PULL_MIN_AGE="${PULL_MIN_AGE:-1500}"   # seconds (25 min); override to force a r
 # themselves; at a 10-minute tick, notifying immediately would fire ~144 times a
 # day for one stuck repo and train the notification to be ignored.
 NOTIFY="${NOTIFY:-1}"                        # 0 disables notifications entirely
-NOTIFY_AFTER="${NOTIFY_AFTER:-10800}"        # stuck this long (3h) before speaking up
+NOTIFY_AFTER="${NOTIFY_AFTER:-3600}"         # stuck this long (1h) before speaking up
 NOTIFY_REPEAT="${NOTIFY_REPEAT:-86400}"      # then at most once a day while still stuck
 STATE_DIR="${GIT_SYNC_STATE_DIR:-$HOME/Library/Application Support/git-sync}"
 
@@ -144,6 +144,34 @@ sync_push_repo() {
   return 0
 }
 
+# Which branch origin considers default. Read from origin/HEAD, which git sets at
+# clone time — but it is absent on repos built with `git init` + `git remote add`,
+# and it goes stale when the remote renames its default branch (the master -> main
+# migration), neither of which `git fetch` repairs. Both cases used to fall back to
+# "main", find no origin/main, report "0 behind" and drift silently forever.
+default_branch() {
+  local repo="$1" def cand
+  def="$(git -C "$repo" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)"
+  def="${def#origin/}"
+
+  # Missing, or naming a branch origin no longer has: ask origin directly.
+  if [ -z "$def" ] || ! git -C "$repo" show-ref --verify --quiet "refs/remotes/origin/$def"; then
+    git -C "$repo" remote set-head origin --auto >/dev/null 2>&1 || true
+    def="$(git -C "$repo" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)"
+    def="${def#origin/}"
+  fi
+
+  # Remote unreachable or silent about its default: take whichever conventional
+  # branch actually exists rather than assuming.
+  if [ -z "$def" ] || ! git -C "$repo" show-ref --verify --quiet "refs/remotes/origin/$def"; then
+    def=""
+    for cand in main master; do
+      if git -C "$repo" show-ref --verify --quiet "refs/remotes/origin/$cand"; then def="$cand"; break; fi
+    done
+  fi
+  printf '%s' "$def"
+}
+
 # Fast-forward the default branch to origin. Touches nothing else.
 refresh_pull_repo() {
   local repo="$1" def head behind fetch_head age
@@ -162,9 +190,11 @@ refresh_pull_repo() {
     return 0
   fi
 
-  def="$(git -C "$repo" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)"
-  def="${def#origin/}"
-  [ -n "$def" ] || def=main
+  def="$(default_branch "$repo")"
+  if [ -z "$def" ]; then
+    problem "$repo" "cannot determine origin's default branch, left alone"
+    return 0
+  fi
 
   head="$(git -C "$repo" symbolic-ref --quiet --short HEAD 2>/dev/null)"
 
