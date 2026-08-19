@@ -38,7 +38,27 @@ log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*"; }
 # Commit local changes, rebase onto origin, push. Mirrors the behaviour of the
 # autosync agents this replaced.
 sync_push_repo() {
-  local repo="$1" branch committed=""
+  local repo="$1" gitdir branch committed="" ahead marker
+
+  gitdir="$(git -C "$repo" rev-parse --absolute-git-dir 2>/dev/null)" || return 0
+
+  # Never touch a repo mid-operation. `add -A` during a conflicted rebase or
+  # merge commits the conflict markers themselves and buries the operation.
+  for marker in rebase-merge rebase-apply MERGE_HEAD CHERRY_PICK_HEAD REVERT_HEAD BISECT_LOG; do
+    if [ -e "$gitdir/$marker" ]; then
+      log "$repo: $marker present (git operation in progress), left alone"
+      return 0
+    fi
+  done
+
+  # Detached HEAD has no branch to push to. Committing here strands the work in a
+  # commit no branch can reach — recoverable only from the reflog, until it is
+  # garbage-collected — while `push origin HEAD` fails outright.
+  branch="$(git -C "$repo" symbolic-ref --quiet --short HEAD 2>/dev/null)" || branch=""
+  if [ -z "$branch" ]; then
+    log "$repo: detached HEAD, left alone"
+    return 0
+  fi
 
   git -C "$repo" add -A
   if ! git -C "$repo" diff --cached --quiet; then
@@ -47,11 +67,18 @@ sync_push_repo() {
   fi
 
   git -C "$repo" remote get-url origin >/dev/null 2>&1 || return 0
-  branch="$(git -C "$repo" symbolic-ref --quiet --short HEAD 2>/dev/null || echo main)"
   git -C "$repo" pull --rebase --autostash -q origin "$branch" 2>/dev/null || true
-  git -C "$repo" push -q origin HEAD 2>/dev/null || true
 
-  [ -n "$committed" ] && log "$repo: committed + pushed ($branch)"
+  if git -C "$repo" push -q origin HEAD 2>/dev/null; then
+    [ -n "$committed" ] && log "$repo: committed + pushed ($branch)"
+  else
+    # Only worth reporting if something is actually stranded locally, otherwise a
+    # laptop that is merely offline would log on every tick.
+    ahead="$(git -C "$repo" rev-list --count "@{upstream}..HEAD" 2>/dev/null || echo 0)"
+    if [ -n "$committed" ] || [ "$ahead" != "0" ]; then
+      log "$repo: push to $branch FAILED, $ahead local commit(s) not on origin"
+    fi
+  fi
   return 0
 }
 
@@ -96,7 +123,7 @@ refresh_pull_repo() {
     behind="$(git -C "$repo" rev-list --count "$def..origin/$def" 2>/dev/null || echo 0)"
     [ "$behind" = "0" ] && return 0
     if git -C "$repo" fetch --quiet origin "$def:$def" 2>/dev/null; then
-      log "$repo: $def advanced $behind commits (on $head, not touched)"
+      log "$repo: $def advanced $behind commits (on ${head:-detached HEAD}, not touched)"
     fi
   fi
   return 0
