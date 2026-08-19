@@ -221,6 +221,20 @@ refresh_pull_repo() {
     fi
   else
     # Default branch isn't checked out here, so move its ref without a checkout.
+    # No local copy of the default branch at all. Happens after an upstream
+    # default-branch rename (master -> main) where the checkout still sits on the
+    # old name. Without this, `rev-list $def..origin/$def` errors, gets swallowed
+    # into "0 behind", and the repo is silently skipped forever.
+    if ! git -C "$repo" show-ref --verify --quiet "refs/heads/$def"; then
+      if git -C "$repo" fetch --quiet origin "$def:$def" 2>/dev/null; then
+        log "$repo: created local $def from origin (on ${head:-detached HEAD}, not touched)"
+        resolved "$repo"
+      else
+        problem "$repo" "no local $def and could not create it from origin/$def"
+      fi
+      return 0
+    fi
+
     behind="$(git -C "$repo" rev-list --count "$def..origin/$def" 2>/dev/null || echo 0)"
     if [ "$behind" = "0" ]; then resolved "$repo"; return 0; fi
     if git -C "$repo" fetch --quiet origin "$def:$def" 2>/dev/null; then
