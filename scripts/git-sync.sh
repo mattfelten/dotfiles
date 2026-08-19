@@ -109,14 +109,22 @@ refresh_pull_repo() {
   if [ "$head" = "$def" ]; then
     behind="$(git -C "$repo" rev-list --count "HEAD..origin/$def" 2>/dev/null || echo 0)"
     [ "$behind" = "0" ] && return 0
-    if [ -n "$(git -C "$repo" status --porcelain 2>/dev/null)" ]; then
-      log "$repo: $def is $behind behind, working tree dirty, left alone"
+    # Only *tracked* changes block the refresh. Untracked files (scratch notes,
+    # .env.local, stray build output) accumulate in a working checkout and must not
+    # stop it being kept current — git still refuses below if an incoming commit
+    # would clobber one of them.
+    if [ -n "$(git -C "$repo" status --porcelain --untracked-files=no 2>/dev/null)" ]; then
+      log "$repo: $def is $behind behind, tracked files modified, left alone"
       return 0
     fi
     if git -C "$repo" merge --ff-only --quiet "origin/$def" 2>/dev/null; then
       log "$repo: $def fast-forwarded $behind commits"
+    elif git -C "$repo" merge-base --is-ancestor HEAD "origin/$def" 2>/dev/null; then
+      # HEAD really is an ancestor, so this was a working-tree obstruction rather
+      # than divergence — say which, so the log isn't misleading.
+      log "$repo: $def is $behind behind but a local file is in the way, left alone"
     else
-      log "$repo: $def could not fast-forward (diverged from origin/$def)"
+      log "$repo: $def could not fast-forward, diverged from origin/$def"
     fi
   else
     # Default branch isn't checked out here, so move its ref without a checkout.
