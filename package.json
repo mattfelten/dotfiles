@@ -1,13 +1,15 @@
 {
 	"name": "dotfiles-setup",
 	"scripts": {
-		"start": "run-s homebrew symlinks autosync macos",
+		"start": "run-s homebrew symlinks autosync refresh macos",
 		"bootstrap": "bash scripts/bootstrap.sh",
 		"symlinks": "node ./scripts/symlinks.js",
 		"unsymlink": "node ./scripts/unsymlink.js",
 		"autosync": "bash scripts/install-autosync.sh",
 		"autosync:uninstall": "bash scripts/uninstall-autosync.sh",
-		"unlink": "run-s autosync:uninstall unsymlink",
+		"refresh": "bash scripts/install-repo-refresh.sh",
+		"refresh:uninstall": "bash scripts/uninstall-repo-refresh.sh",
+		"unlink": "run-s autosync:uninstall refresh:uninstall unsymlink",
 		"macos": "node ./scripts/macos.js",
 		"homebrew": "node ./scripts/homebrew.js"
 	},
