@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 // Reverse of symlinks.js: removes only the symlinks that point back into this repo.
-// Real files/dirs are never touched. (The autosync agent is handled separately —
-// see `npm run autosync:uninstall` / `npm run unlink`.)
+// Real files/dirs are never touched. (The git-sync agent is handled separately —
+// see `npm run sync:uninstall` / `npm run unlink`.)
 
 import fs from 'fs';
 import path from 'path';

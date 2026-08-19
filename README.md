@@ -17,21 +17,35 @@ Or `./scripts/bootstrap.sh` after cloning. For future updates, run `npm start`.
 | Command                      | What it do                                                    |
 | ---------------------------- | ------------------------------------------------------------- |
 | `bash scripts/bootstrap.sh`  | Run once on fresh clone: NVM/Node + npm install + full setup  |
-| `npm start`                  | Run full setup in order (homebrew, symlinks, autosync, macos) |
+| `npm start`                  | Run full setup in order (homebrew, symlinks, sync, macos)     |
 | `npm run homebrew`           | Install Homebrew + Brewfile packages                          |
 | `npm run symlinks`           | Symlink dotfiles to ~/                                        |
 | `npm run unsymlink`          | Remove our symlinks from ~/                                   |
-| `npm run autosync`           | Install the git autosync launchd agent                        |
-| `npm run autosync:uninstall` | Uninstall the git autosync launchd agent                      |
-| `npm run unlink`             | Uninstall the autosync agent, then remove symlinks            |
+| `npm run sync`               | Install the git-sync launchd agent                            |
+| `npm run sync:uninstall`     | Uninstall the git-sync launchd agent                          |
+| `npm run unlink`             | Uninstall the git-sync agent, then remove symlinks            |
 | `npm run macos`              | Apply macOS system preferences                                |
 
-### Git autosync
+### Git sync
 
-`npm run autosync` installs a launchd agent (`com.mattfelten.dotfiles-autosync`)
-that commits, pulls, and pushes this repo every 10 minutes, so changes travel between
-machines automatically. It's part of `npm start`. Tear it down with `npm run autosync:uninstall`
-(or `npm run unlink` to also remove the symlinks). Logs: `~/Library/Logs/dotfiles-autosync.log`.
+`npm run sync` installs one launchd agent (`com.mattfelten.git-sync`) that runs
+`scripts/git-sync.sh` over every checkout under `~/Projects` every 10 minutes. It replaces the
+old per-repo `*-autosync` agents, and removes them on install. It's part of `npm start`. Tear it
+down with `npm run sync:uninstall` (or `npm run unlink` to also remove the symlinks).
+Logs: `~/Library/Logs/git-sync.log` — quiet unless something changed or failed.
+
+Two modes, set by `PUSH_RE` at the top of the script:
+
+- **push** (`dotfiles`, `ai-brain`) — repos whose contents we edit directly: commit everything,
+  rebase on origin, push. Changes travel between machines automatically.
+- **pull** (everything else) — checkouts of shared work: fast-forward the default branch only.
+  Never commits, never pushes, never touches a dirty tree, a feature branch, or a worktree.
+  Where the default branch isn't checked out its ref is advanced with `git fetch origin main:main`,
+  which git refuses unless it's a clean fast-forward.
+
+Pull-only repos are refreshed at most every 25 minutes (`PULL_MIN_AGE`) even though the agent
+ticks every 10, so a work checkout doesn't get a pile of commits swapped in under a running dev
+server. New clones default to pull mode, which is the safe default.
 
 ### Synced Claude Code config
 

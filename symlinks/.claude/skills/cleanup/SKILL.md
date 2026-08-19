@@ -190,7 +190,7 @@ git -C <repo> diff main <branch>          # read the "+" side: content the branc
 **Use that content diff, not a SHA-based check.** `git log <branch> --not --remotes`,
 `git cherry`, and the three-dot `git diff main...<branch>` all report a branch as holding
 unmerged work when its content is already on `main` — they compare commit identity, and
-autosync (ai-brain, dotfiles) re-commits the same content under new SHAs. Trusting one of
+git-sync's push mode (ai-brain, dotfiles) re-commits the same content under new SHAs. Trusting one of
 those on 2026-08-07 nearly duplicated a note into ai-brain.
 
 **Then actually read the `+` lines before calling them "work to save."** They are just as

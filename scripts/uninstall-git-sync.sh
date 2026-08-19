@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Uninstall the launchd agent that fast-forwards default branches to origin.
+# Uninstall the git-sync launchd agent. Leaves every repo exactly as it is.
 set -uo pipefail
 
-LABEL="com.mattfelten.repo-refresh"
+LABEL="com.mattfelten.git-sync"
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 
 launchctl unload "$PLIST" 2>/dev/null || true
