@@ -73,7 +73,7 @@ launchctl load -w "$PLIST" 2>/dev/null || true
 echo "Installed: $LABEL"
 echo "  root:  $ROOT"
 echo "  log:   $HOME/Library/Logs/git-sync.log"
-if launchctl list | grep -q "$LABEL"; then
+if launchctl print "gui/$(id -u)/$LABEL" >/dev/null 2>&1; then
   echo "  status: loaded and running"
 else
   # A plist in ~/Library/LaunchAgents loads automatically at next login even if

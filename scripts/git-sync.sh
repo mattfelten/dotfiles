@@ -16,6 +16,12 @@
 # Usage: git-sync.sh [root]                 (default root: ~/Projects)
 set -uo pipefail
 
+# launchd hands over a minimal PATH that omits the homebrew prefix, but the GitLab
+# credential helper is `!glab auth git-credential` — without glab on PATH every
+# fetch against gitlab.com fails auth. Both prefixes listed so this works on the
+# Intel Mac too.
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
 ROOT="${1:-$HOME/Projects}"
 
 # Repos that get push mode. Everything else discovered under ROOT is pull-only,

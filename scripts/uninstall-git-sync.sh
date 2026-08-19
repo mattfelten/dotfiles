@@ -8,7 +8,7 @@ PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 launchctl unload "$PLIST" 2>/dev/null || true
 rm -f "$PLIST"
 
-if launchctl list | grep -q "$LABEL"; then
+if launchctl print "gui/$(id -u)/$LABEL" >/dev/null 2>&1; then
   echo "WARNING: $LABEL is still loaded" >&2
   exit 1
 else
