@@ -58,5 +58,7 @@
   "tui": "fullscreen",
   "theme": "auto",
   "teammateMode": "in-process",
-  "skipAutoPermissionPrompt": true
+  "inputNeededNotifEnabled": true,
+  "skipAutoPermissionPrompt": true,
+  "agentPushNotifEnabled": true
 }
