@@ -320,7 +320,18 @@ glab api "projects/27492617/merge_requests?reviewer_username=mattfelten&state=op
 `--mode auto` for the autonomous skill. The script owns section selection, empty-section
 omission, URL placement, and receipt retention, so those stay consistent between the two
 skills. Write your findings into the state file first, then render — anything not in state does
-not appear. Detail that doesn't fit an entry goes *below* the report, never instead of it.
+not appear.
+
+**The list is the whole output.** Matt is trying to reduce how much he reads per day, so prose
+around it is a cost, not a service.
+
+- An idle pass is the list and nothing else. No recap of what you checked, no explanation of
+  your polling cadence, no "worth knowing that…".
+- Never restate an entry in prose. If it matters, it belongs *in* the entry.
+- Detail you think is important goes in the state file `note`, where it is retrievable and
+  costs him nothing. On screen it is noise.
+- Two lines below the list is the ceiling, and only when something genuinely has no entry to
+  live in. Default to zero.
 
 Rules:
 - **Omit empty sections.** If everything is empty, say so in one line.
