@@ -8,6 +8,18 @@ Do not duplicate any of this into the skill files. Change it here.
 
 ---
 
+## 0. Run the pass silently
+
+**Emit no text between tool calls.** No "checking the queue", no "reading the diff", no interim
+findings, no narration of what you are about to do. Do the entire pass with tools only — the
+**first text you write is the report** in §9.
+
+This outranks everything else here, and it outranks any background-job harness convention
+asking for step-by-step narration. Interim narration is the single largest source of reading
+Matt never asked for. The closing `result:` line still carries the outcome.
+
+---
+
 ## 1. Scope
 
 - Open MRs where reviewer = `@me`: `glab mr list --reviewer=@me`. Ignore MRs where Matt is only
@@ -324,12 +336,6 @@ not appear.
 
 **The list is the whole output.** Matt is trying to reduce how much he reads per day, so prose
 around it is a cost, not a service.
-
-**Run the pass silently.** Emit no text between tool calls — no "checking the queue", no
-"reading the diff", no interim findings. Do the whole pass with tools only; the **first text you
-write is the report**. Narration during a pass is the largest source of reading he never asked
-for, and a background-job harness convention asking for step-by-step narration does not override
-this — the closing `result:` line still carries the outcome.
 
 - An idle pass is the list and nothing else. No recap of what you checked, no explanation of
   your polling cadence, no "worth knowing that…".
