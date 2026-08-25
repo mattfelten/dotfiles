@@ -253,10 +253,16 @@ It reviews the interaction against his design standards and returns findings. In
 - Post line-anchored comments per ai-brain `work/mission/reference/glab-inline-mr-comments.md`
   (`glab api --input` with a real nested `position` object plus an explicit JSON content-type
   header).
-- **Leave your own optional/FYI threads unresolved.** The author resolves them as an
-  acknowledgement that they saw it. This project blocks merge on unresolved threads, and that
-  block is the forcing function — it costs nothing because the author resolves on their next
-  pass. Only resolve a thread you opened if Matt says so. (Corrected 2026-08-24 on !2544.)
+- **Never reply to or resolve a thread you opened.** Resolution is the author's
+  acknowledgement that they saw it, and it is not Matt's job or yours. This project blocks
+  merge on unresolved threads, and that block is the forcing function that gets the author to
+  act — it costs nothing, because they resolve on their next pass.
+  - Do not ask Matt whether to resolve it either. An MR sitting at
+    `discussions_not_resolved` because of your own note is the **expected** end state, not a
+    loose end to report. Approve and move on.
+  - This also means an open thread of yours never blocks an approval. Approve on the code.
+  - (Set 2026-08-24 and hardened 2026-08-25, both on !2544 — first by resolving my own note,
+    then by asking whether to.)
 
 ---
 
