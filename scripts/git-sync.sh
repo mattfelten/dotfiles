@@ -174,14 +174,19 @@ default_branch() {
 
 # Fast-forward the default branch to origin. Touches nothing else.
 refresh_pull_repo() {
-  local repo="$1" def head behind fetch_head age
+  local repo="$1" def head behind stamp age
 
   git -C "$repo" remote get-url origin >/dev/null 2>&1 || return 0
 
-  # Skip repos fetched recently enough — see PULL_MIN_AGE.
-  fetch_head="$repo/.git/FETCH_HEAD"
-  if [ -f "$fetch_head" ]; then
-    age=$(( $(date +%s) - $(stat -f %m "$fetch_head" 2>/dev/null || echo 0) ))
+  # Throttle on OUR last refresh, not on .git/FETCH_HEAD. FETCH_HEAD is shared
+  # state that *any* fetch updates — editor autofetch, the Claude Code harness
+  # fetching origin before it creates a worktree, a manual `git fetch` — so keying
+  # off it meant a frequently-fetched repo looked "just refreshed" on every tick
+  # and was never fast-forwarded. Observed in the wild: control.missioncloud.com
+  # sat 3 commits behind with a clean tree while a manual ff worked instantly.
+  stamp="$(state_file "$repo")"; stamp="${stamp%.blocked}.lastpull"
+  if [ -f "$stamp" ]; then
+    age=$(( $(date +%s) - $(stat -f %m "$stamp" 2>/dev/null || echo 0) ))
     [ "$age" -lt "$PULL_MIN_AGE" ] && return 0
   fi
 
@@ -189,6 +194,9 @@ refresh_pull_repo() {
     problem "$repo" "fetch failed"
     return 0
   fi
+  # Only stamp a fetch that worked, so a failing remote is retried next tick.
+  mkdir -p "$STATE_DIR" 2>/dev/null || true
+  : > "$stamp"
 
   def="$(default_branch "$repo")"
   if [ -z "$def" ]; then
