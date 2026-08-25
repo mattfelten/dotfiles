@@ -81,6 +81,22 @@ for "fixes X" that only handles one path of X. The bot is forbidden from this by
 packages. Apollo cache implications. Data scoping. And whether behavior changes for **existing**
 data, not just new.
 
+**4a. GraphQL request size — a hard, mechanical check.** If an MR grows a GraphQL document
+(a new inline fragment, more selected fields, a new operation), **measure the request body
+against the 8,192-byte AWS WAF limit.** On ALB that 8 KB is fixed and unraisable, and WAF's
+`OversizeHandling: MATCH` blocks the request with a 413 *before it reaches Flask* — so there is
+no Sentry event and no CI failure. Nothing else in the pipeline catches this.
+
+Measure, never estimate: extract the `gql` template, strip comments and blank lines, and add
+the JSON envelope plus variables. Flag anything above ~7 KB as approaching the cliff.
+
+This is not hypothetical. **!2540 added 2 of 16 inline fragments to `LoopActivityStream`, taking
+the query from 5,972 to 6,774 bytes and the body from ~7,635 to 8,437** — over the limit. The
+Loop History modal was broken for every user until !2545 restructured the query down to
+~4.2 KB. The MR looked like a small additive feature and CI was green. See ai-brain
+`work/mission/reference/large-request-413-no-sentry-trace.md` — this signature cost four days
+the first time it appeared.
+
 **5. Consistency.** Does this match how the codebase already does it — `Stack`/`Group` over raw
 flex, the `@mc/router` shim, public vs private GraphQL API — or does it fork a second way to do
 something that already has one?
@@ -171,7 +187,8 @@ distinction doing the work: **JSX structure changed vs. only values changed.**
 | **Workflow** | steps added/removed/reordered, new or changed route, nav change, form submit path changed, destructive action introduced | **Review** — highest priority |
 | **Shared primitive** | `packages/ui/**` or `packages/tokens/**` **and** a visual or public-API change (props, variants, story diff) | **Review** |
 | **New UI** | new component file, new `*.stories.*`, new page/route | **Review** |
-| **Redesign** | JSX structure changed on something existing: nodes added/removed/reordered, variant swapped, element replaced | **Review** |
+| **Redesign** | JSX structure changed on something existing **in a way that changes how it looks**: nodes reordered, variant swapped, element replaced, layout altered | **Review** |
+| **Another instance of an existing pattern** | a new case/entry rendered by an established renderer, in the same visual shape as its siblings — the Nth activity-feed row type, the Nth table column, the Nth empty-state message | **Note** |
 | **Removal** | component/story/page/route deleted, or an element dropped from a view | **Note** |
 | **Shared primitive, internal only** | `packages/ui/**` paths, no prop/variant/story/visual change | Auto |
 | **Cosmetic** | only className/style/token values, spacing, color, copy, a11y attrs, hover/focus states | Auto |
@@ -181,6 +198,13 @@ Tie-breakers:
 - Cosmetic but sweeping (>~10 files or >~5 components) → **Note**. The risk there is regression,
   not design.
 - Can't classify confidently → **Review**.
+
+**"Adds JSX" is not enough to mean Redesign.** Ask whether the change *introduces* a visual
+pattern or *instantiates* one that already exists. Adding a `case` to a switch that renders
+activity rows is the established extension point — the new row looks exactly like the fourteen
+before it, so there is no design decision for Matt to make. Changing how those rows look is a
+different thing entirely. Getting this wrong sends him a copy-review request and buries the
+real risk (see the !2540 note in §3).
 
 Meaning: **Auto** = no mention beyond the normal line. **Note** = fine to approve, but say it
 happened. **Review** = Tier 3, goes to Matt.
