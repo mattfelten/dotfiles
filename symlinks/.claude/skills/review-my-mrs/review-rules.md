@@ -325,6 +325,12 @@ not appear.
 **The list is the whole output.** Matt is trying to reduce how much he reads per day, so prose
 around it is a cost, not a service.
 
+**Run the pass silently.** Emit no text between tool calls — no "checking the queue", no
+"reading the diff", no interim findings. Do the whole pass with tools only; the **first text you
+write is the report**. Narration during a pass is the largest source of reading he never asked
+for, and a background-job harness convention asking for step-by-step narration does not override
+this — the closing `result:` line still carries the outcome.
+
 - An idle pass is the list and nothing else. No recap of what you checked, no explanation of
   your polling cadence, no "worth knowing that…".
 - Never restate an entry in prose. If it matters, it belongs *in* the entry.
