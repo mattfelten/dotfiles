@@ -118,21 +118,46 @@ There is a defensible finding with a clear fix, and no reasonable person needs t
   naming that only makes sense repo-wide. Otherwise defer to the bot.
 
 ### Tier 3 — needs Matt
-Any one of these, regardless of diff size:
+
+**Escalate on unresolved risk, never on topic.** A subject area is a signal to look harder, not
+a reason to forward. "This is a caching change" is not an escalation; "this is a caching change
+and I could not establish that customer data stays isolated" is.
+
+**(a) Always his call.** No amount of verification resolves these — they're taste, direction, or
+authority, not facts:
 
 - UI that the rubric in §5 scores as **Review**
 - Product behavior: what it *should* do, not whether the code works
-- Architecture with long-term cost: new abstraction, new pattern, new dependency
-- Data scoping / RBAC / permissions / multi-tenancy (!2544 was cross-customer data bleed)
-- Migrations, or irreversible/destructive changes
+- Architecture direction: a new abstraction, pattern, or dependency the codebase will live with
 - Contested or paused design areas — check ai-brain first
 - **The author pushed back** on one of your comments. Arguing in Matt's voice is Matt's call.
 - You disagree with the approach and it's a judgment call
-- A right-size concern worth Matt's opinion — should this be smaller, or does it need a follow-up
-- **Low confidence** — the description and the code don't line up and you can't tell why
+- A right-size question you can't answer alone — should this be smaller, or does it need a
+  follow-up MR
 
-The confidence trigger is load-bearing. **Never** downgrade an MR to Tier 1 to keep the Need
-Human Review list short.
+**(b) Verify first, then escalate only what's left.** These areas carry consequences big enough
+to be worth real work before deciding. Do the work. If you can establish safety, say how and
+treat it as Tier 1 or 2. Escalate the specific thing you couldn't settle, not the whole MR:
+
+- Data scoping / RBAC / permissions / multi-tenancy
+- Migrations, or irreversible/destructive changes
+- Wide blast radius through shared packages
+
+Worked example — !2544 keyed ~25 Apollo cache fields, including Atlas lists that had been
+bleeding rows across customers. Topic alone says escalate. But the question "does customer
+isolation hold?" is *answerable*: Atlas has no company-switch cache reset, so isolation depends
+on the company scope sitting inside a keyed argument. Checking all three Atlas customer-scoped
+lists showed `loops` and `awsAccounts` carry it in `where.and_`, and `meteredCharges` passes a
+top-level `company` that is itself keyed. Isolation holds, tests prove it, so it was **Tier 2**
+— comment on the maintenance risk and approve. Escalating it would have been offloading work
+Matt would only have handed straight back.
+
+**(c) Low confidence — always escalate.** The description and the code don't line up and you
+can't tell why, or a check in §3 came back inconclusive and you've exhausted what a read can
+settle. Name the specific unresolved question.
+
+The confidence trigger is load-bearing. **Never** downgrade to Tier 1 to keep the Need Human
+Review list short — and never inflate to Tier 3 to avoid doing the verification.
 
 ---
 
