@@ -300,7 +300,21 @@ Keep `note` genuinely informative. It is the permanent audit trail — the thing
 ## 9. The report
 
 Print it **in full, every pass**. It is an aggregate view, not a per-pass changelog — it does
-not reset. Render it from the state file so the two can't drift.
+not reset.
+
+**Render it with `render-report.py`, do not hand-write it.** Prose about the MRs you looked at
+is not the report — the list is the deliverable, and improvising it is how sections go missing.
+
+```bash
+glab api "projects/27492617/merge_requests?reviewer_username=mattfelten&state=opened&per_page=50" \
+  | python3 ~/.claude/skills/review-my-mrs/render-report.py \
+      --mode manual --session "$CLAUDE_CODE_SESSION_ID"
+```
+
+`--mode auto` for the autonomous skill. The script owns section selection, empty-section
+omission, URL placement, and receipt retention, so those stay consistent between the two
+skills. Write your findings into the state file first, then render — anything not in state does
+not appear. Detail that doesn't fit an entry goes *below* the report, never instead of it.
 
 Rules:
 - **Omit empty sections.** If everything is empty, say so in one line.
