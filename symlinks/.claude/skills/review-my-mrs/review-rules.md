@@ -31,6 +31,10 @@ Matt never asked for. The closing `result:` line still carries the outcome.
   description **or** a non-system comment. Being added as a reviewer is not enough.
   - description: `glab api "projects/9405729/merge_requests/<iid>"` → `.description`
   - comments: `glab api "projects/9405729/merge_requests/<iid>/notes?per_page=100"`
+  - **Filter out `system: true` notes before matching.** Adding Matt as a reviewer writes a
+    system note reading `requested review from @mattfelten, …`, so grepping the raw notes JSON
+    matches every MR he was ever assigned and pulls the whole services queue into scope. Parse
+    the JSON and check `not n["system"] and "mattfelten" in n["body"]`.
 
 Re-check approval every pass: **GitLab wipes approval on push and on retarget**, even at the
 same SHA (ai-brain `work/mission/reference/gitlab-approval-resets-on-push.md`).
