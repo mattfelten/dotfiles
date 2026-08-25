@@ -194,6 +194,17 @@ It reviews the interaction against his design standards and returns findings. In
 - Live main, for the "before" half:
   `https://missioncloud.gitlab.io/platform/control.missioncloud.com/`
 - Deep-link a specific story with `?path=/story/<story-id>`.
+- **Storybook is behind GitLab SAML SSO.** Any fetch of it — including `index.json` — 302s to
+  an SSO redirect, so you **cannot** look up story ids, verify a link resolves, or screenshot
+  it with Playwright. Only Matt can open these URLs. Consequences:
+  - Derive the story id from `.storybook/main.ts`: each entry maps a `directory` to a
+    `titlePrefix`, and the auto-title is `<titlePrefix>/<path under directory, no extension>`.
+    The id is that title plus `--<export>`, lowercased with every non-alphanumeric run
+    collapsed to a single dash. camelCase is **not** split, so `CollaborationHub` becomes
+    `collaborationhub`.
+  - Treat the deep link as **unverified**. Always give the sidebar path next to it as a
+    fallback (`Mission Control → features → … → Default`) so a wrong id costs him one click,
+    not a dead end.
 - **Local run is on-demand only**, triggered by Matt saying something like *"let's review
   Storybook on !X"*. Then pull the branch, run it, and hand back specific URLs. Remember
   `npm install` in a worktree or `@m/*` resolves to the main checkout (ai-brain
