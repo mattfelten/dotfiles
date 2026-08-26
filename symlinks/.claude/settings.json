@@ -55,9 +55,12 @@
   },
   "effortLevel": "high",
   "awaySummaryEnabled": false,
+  "askUserQuestionTimeout": "never",
   "tui": "fullscreen",
   "theme": "auto",
-  "teammateMode": "in-process",
+  "editorMode": "normal",
+  "verbose": false,
+  "teammateMode": "auto",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true
