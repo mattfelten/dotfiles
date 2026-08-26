@@ -59,6 +59,6 @@
   "theme": "auto",
   "teammateMode": "in-process",
   "inputNeededNotifEnabled": true,
-  "skipAutoPermissionPrompt": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true
 }
