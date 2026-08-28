@@ -43,13 +43,20 @@
   },
   "enabledPlugins": {
     "figma@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true
+    "frontend-design@claude-plugins-official": true,
+    "mission-mcp@mission-mcp": true
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
       "source": {
         "source": "github",
         "repo": "anthropics/skills"
+      }
+    },
+    "mission-mcp": {
+      "source": {
+        "source": "git",
+        "url": "https://gitlab.com/missioncloud/platform/mission-mcp-server.git"
       }
     }
   },
