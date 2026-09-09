@@ -44,6 +44,15 @@ BODY_FLAGS = {"--body", "-b", "--description", "-d", "--notes"}
 FILE_FLAGS = {"--body-file", "-F", "--description-file"}
 TITLE_FLAGS = {"--title", "-t"}
 
+# The same rules are written for an author in ~/.claude/skills/write-mr/standard.md.
+# This copy stays embedded on purpose. It is a judge rubric, not documentation:
+# numbered "answer unclear if" checks, an explicit not-criteria list, few-shot
+# examples and a JSON contract. Two things break if the judge is fed the prose
+# version instead. Asking for quality in the abstract inverted the result on real
+# MRs, failing terse writing and passing the long explanatory kind; and a rule
+# buried in prose gets under-weighted, which is why the why-length rule sits in
+# the numbered list. Enforcement also should not change every time an authoring
+# doc is reworded. Change a rule in both places, and re-validate against real MRs.
 JUDGE_PROMPT = """You are checking a merge request description against the standard Matt holds
 his team to. Answer whether it meets that standard.
 
@@ -226,7 +235,9 @@ Rewrite and run the command again. This is not about making it shorter. If there
 is detail worth keeping that does not help the reviewer, put it in your reply to
 Matt instead of the MR body.
 
-Full guide: ~/Projects/personal/ai-brain/me/mr-description-voice.md
+Full guide: ~/.claude/skills/write-mr/standard.md
+Composing one: the write-mr skill reconciles that standard with the repo's own
+MR template, and runs this check on demand before you publish.
 If Matt asked for this description as written, re-run with MR_STYLE_SKIP=1 set."""
 
 
