@@ -297,12 +297,16 @@ It reviews the interaction against his design standards and returns findings. In
   "web_url": "https://gitlab.com/…",
   "auto": true,                   // acted on without Matt
   "first_shown_session": null,    // set on first render; drives receipt clearing
-  "escalation": null,             // which Tier 3 trigger fired
+  "escalation": null,             // which Tier 3 trigger fired (audit only, not rendered)
   "ui_category": null,            // workflow | shared | new | redesign | removal | cosmetic
-  "recommendation": null,         // approve suggested | changes suggested | unsure
-  "look_at": null,                // what specifically Matt should look at
-  "ux_read": null,                // subagent findings, summarized
-  "storybook": []                 // [{story, mr_url, main_url?}]
+
+  // the four that render in Need Human Review, see §9
+  "headline": null,               // plain-English "what changed", not the commit title
+  "take": null,                   // your recommendation, one line
+  "decisions": [],                // one question per entry, never two joined by "and"
+  "look_at": null,                // phrased to follow "Look at " and precede a colon
+  "storybook": [],                // [{label, mr_url, main_url?}]
+  "storybook_path": null          // Storybook sidebar path, since the story id is unverifiable
 }
 ```
 
@@ -357,14 +361,15 @@ Rules:
 
 ```
 ## Need Human Review
-- !2294: Add bulk archive to the Loops list
-  Recommendation: approve suggested
-  Why you: workflow change, introduces a destructive bulk action
-  Look at: the confirm step, it archives 20 loops with no undo
-  UX read: no undo affordance, and the button says Archive while the copy implies delete
-  Storybook: <one most-useful url>
-  Question: want me to comment about undo, or approve as-is?
-  https://gitlab.com/…/merge_requests/2294
+**!2294 — Loops list gets bulk archive**
+I'd approve, with one thing that's yours.
+
+Your call:
+1. The confirm step archives 20 loops with no undo. OK to ship without one?
+
+Look at the confirm step:
+[storybook MR](…) · [main](…) · [!2294](…)
+sidebar: Mission Control → features → Loops → LoopsList → Default
 
 ## Waiting on Changes
 - !9482: Fix metered charge rounding on invoice export
@@ -379,6 +384,23 @@ Rules:
   auto-approved, merged
   removed: filter panel and its story
 ```
+
+**The Need Human Review shape is "decision first"** (chosen by Matt 2026-09-18, replacing a
+seven-label block he couldn't parse). Four parts, in this order, and nothing else:
+
+1. **`**!iid — headline**`** — a plain-English headline you write, not the commit title. What
+   changed, in the words he'd use. `state.headline`.
+2. **Your take, one line.** Lead with the recommendation. `state.take`.
+3. **`Your call:` / `Your call, two things:`** then a numbered list. **One decision per number**,
+   never two joined by "and" — a compound question is the thing that made the old format
+   unreadable. Each item carries the context needed to answer it and nothing more.
+   `state.decisions`, a list.
+4. **`Look at <x>:`** then the links on one line, then the sidebar path.
+   `state.look_at` (phrased to follow "Look at"), `state.storybook`, `state.storybook_path`.
+
+Dropped on purpose: `Why you`, `UX read` and a separate `Question` line. They said the same thing
+four times. The reason it came to him is implicit in the decisions; the UX read belongs inside the
+decision it bears on, or in the state `note` where it costs him nothing.
 
 Section semantics:
 
