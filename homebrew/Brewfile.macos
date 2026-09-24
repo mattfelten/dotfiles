@@ -5,7 +5,7 @@ brew 'mas'
 
 cask "chatgpt"
 cask "claude"
-cask "claude-code"
+cask "claude-code@latest"
 cask "cleanshot"
 cask "cursor"
 cask "cursor-cli"
