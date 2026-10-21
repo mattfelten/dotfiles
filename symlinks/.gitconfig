@@ -37,8 +37,6 @@
 	## Quick amend without rewording
 	ca = commit --amend --no-edit --no-verify
 
-	## Remove old branches, clean untracked files, clear stash
-	cleanup = !git remote prune origin && git gc && git clean -dfx && git stash clear
 
 	## Show a list of commits in a branch with coloring
 	ls = log --pretty=format:"%C(yellow)%h\\ %C(cyan)%ad%Cred%d\\ %Creset%s%C(magenta)\\ [%an]" --decorate --date=relative -20
@@ -65,25 +63,16 @@
 	};\
 	rework"
 
-	hack = town hack
-	start = town hack
-	delete = town delete
-	compress = town compress
-	contribute = town contribute
-	observe = town observe
-	park = town park
-	propose = town propose
-	rename = town rename
-	repo = town repo
-	sync = town sync
-	br = town branch
 
 [credential]
 	helper = osxkeychain
 [push]
 	default = simple
+	autoSetupRemote = true
 [pull]
 	rebase = true
+[rerere]
+	enabled = true
 [filter "hawser"]
 	clean = git hawser clean %f
 	smudge = git hawser smudge %f

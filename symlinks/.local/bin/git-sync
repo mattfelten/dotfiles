@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# git sync
+# On the default branch: pull. On a feature branch: pull its remote, rebase
+# onto the default branch, force-push (with lease) if it's been pushed.
+source "$HOME/.local/lib/git-branch.sh"
+
+git fetch --prune origin
+cur="$(current)"
+main="$(default_branch)"
+
+if [ "$cur" = "$main" ]; then
+  git pull
+  exit
+fi
+
+update_local_default "$main"
+
+if git rev-parse --verify --quiet '@{u}' >/dev/null; then
+  git pull
+elif git config "branch.$cur.merge" >/dev/null; then
+  echo "• origin/$cur is gone (merged?). \`git delete\` cleans it up."
+fi
+
+git rebase "origin/$main" || die "Fix the conflicts, \`git rebase --continue\`, then \`git sync\` again"
+
+if git rev-parse --verify --quiet '@{u}' >/dev/null; then
+  git push --force-with-lease
+fi
+echo "✓ $cur is up to date with $main"

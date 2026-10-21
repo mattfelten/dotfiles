@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# git start <branch>
+# Create a branch off the latest origin default branch and switch to it.
+# Uncommitted changes come along.
+source "$HOME/.local/lib/git-branch.sh"
+
+[ $# -eq 1 ] || die "Usage: git start <branch>"
+git fetch --prune origin
+main="$(default_branch)"
+update_local_default "$main"
+git switch --no-track -c "$1" "origin/$main"

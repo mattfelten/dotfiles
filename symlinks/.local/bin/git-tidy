@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# git tidy
+# Delete local branches whose origin branch is gone, which after a squash
+# merge is how a merged branch looks. Skips the current branch and any branch
+# checked out in a worktree.
+source "$HOME/.local/lib/git-branch.sh"
+
+git fetch --prune origin
+cur="$(git symbolic-ref --quiet --short HEAD || true)"
+
+git for-each-ref --format='%(refname:short) %(upstream:track)' refs/heads |
+  while read -r b track; do
+    [ "$track" = "[gone]" ] || continue
+    if [ "$b" = "$cur" ]; then
+      echo "• Skipping $b, you're on it. \`git delete\` removes it."
+    elif ! git branch -D "$b" 2>/dev/null; then
+      echo "• Skipping $b, it's checked out in a worktree"
+    fi
+  done
