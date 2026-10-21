@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# git tidy
+# git cleanup
 # Delete local branches whose origin branch is gone, which after a squash
 # merge is how a merged branch looks. Skips the current branch and any branch
 # checked out in a worktree.
