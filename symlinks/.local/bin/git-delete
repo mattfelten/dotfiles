@@ -9,6 +9,10 @@ b="${1:-$(current)}"
 [ "$b" != "$main" ] || die "Not deleting $main"
 
 if [ "$b" = "$(git symbolic-ref --quiet --short HEAD)" ]; then
+  # Bring local main up to the merge first, so uncommitted edits to files the
+  # branch changed don't block the switch.
+  git fetch --quiet origin
+  update_local_default "$main"
   git switch "$main"
 fi
 if on_origin "$b"; then
