@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# git rename [old] <new>
+# Rename a branch locally and on origin. An open PR/MR stays on the old name
+# and gets closed, so rename before proposing.
+source "$HOME/.local/lib/git-branch.sh"
+
+main="$(default_branch)"
+case $# in
+  1) old="$(current)"; new="$1" ;;
+  2) old="$1"; new="$2" ;;
+  *) die "Usage: git rename [old] <new>" ;;
+esac
+[ "$old" != "$main" ] || die "Not renaming $main"
+
+git branch -m "$old" "$new"
+if on_origin "$old"; then
+  git push -u origin "$new"
+  git push origin --delete "$old"
+fi
+echo "✓ Renamed $old → $new"

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# git propose
+# Push the branch and open its PR/MR in the browser (the existing one if
+# there is one).
+source "$HOME/.local/lib/git-branch.sh"
+
+cur="$(current)"
+main="$(default_branch)"
+[ "$cur" != "$main" ] || die "You're on $main"
+
+git push -u origin HEAD
+url="$(git remote get-url origin)"
+case "$url" in
+  *github.com*) gh pr view --web 2>/dev/null || gh pr create --web --base "$main" ;;
+  *gitlab*) glab mr view --web 2>/dev/null || glab mr create --web --fill --target-branch "$main" ;;
+  *) die "Don't know how to open a PR/MR for $url" ;;
+esac

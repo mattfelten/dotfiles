@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# git finish [branch]
+# Done with a branch: `git delete` it, then switch to the default branch and
+# pull it up to date.
+source "$HOME/.local/lib/git-branch.sh"
+
+git delete "$@"
+main="$(default_branch)"
+[ "$(current)" = "$main" ] || git switch "$main"
+git pull

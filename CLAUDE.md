@@ -12,7 +12,7 @@ Personal dotfiles repo for macOS/WSL. Manages Homebrew packages, symlinked confi
 | --------------------------- | ---------------------------------------------------------------------- |
 | `bash scripts/bootstrap.sh` | First-time setup: installs NVM/Node, npm install, then runs full setup |
 | `npm start`                 | Run all setup steps in order (homebrew → symlinks → sync → macos)      |
-| `npm run homebrew`          | Install Homebrew + bundle Brewfiles                                    |
+| `npm run homebrew`          | Install Homebrew, pick packages from a checklist, bundle (`-- --all` skips the checklist) |
 | `npm run symlinks`          | Symlink files from `symlinks/` to `~/`                                 |
 | `npm run macos`             | Apply macOS defaults (requires sudo, skipped on non-macOS)             |
 | `npm run sync`              | Install the `com.mattfelten.git-sync` launchd agent (see README)       |
@@ -23,8 +23,8 @@ There are no tests or linting configured.
 ## Architecture
 
 - **`scripts/`** — Node.js scripts (using `chalk` for output) that orchestrate setup. Each `npm run` command maps to a script here. `bootstrap.sh` handles NVM/Node bootstrapping before handing off to npm; `git-sync.sh` plus its install/uninstall pair are bash and drive the single launchd agent that keeps every checkout under `~/Projects` in sync.
-- **`symlinks/`** — Files and directories that get symlinked directly into `~/` preserving their relative paths. Includes shell config (`.zshrc`, `.aliases`, `.p10k.zsh`), git config, editorconfig, and a `.claude/` directory with global Claude Code settings.
-- **`homebrew/`** — Two Brewfiles: `Brewfile` (cross-platform formulas) and `Brewfile.macos` (casks + Mac App Store apps, macOS only).
+- **`symlinks/`** — Files and directories that get symlinked directly into `~/` preserving their relative paths. Includes shell config (`.zshrc`, `.aliases`, `.p10k.zsh`), git config, editorconfig, `.local/bin/git-{start,sync,propose,delete,finish,rename,cleanup}` (git runs these as `git start` etc.; shared helpers in `.local/lib/git-branch.sh`), and a `.claude/` directory with global Claude Code settings.
+- **`homebrew/`** — One `Brewfile` listing everything I might want. `scripts/homebrew.js` shows it as a checklist (all selected, grouped by `## Heading` comments), writes the picks to a temp Brewfile and bundles that. Casks and `mas` entries are dropped off macOS; `brew 'mas'` is added automatically when any `mas` app is picked.
 - **`macos-defaults/`** — Individual `.sh` scripts for macOS `defaults write` commands, organized by domain (dock, finder, safari, etc.). Run alphabetically. Safari script requires Full Disk Access.
 - **`terminal/`** — Terminal.app theme file.
 
@@ -32,7 +32,6 @@ There are no tests or linting configured.
 
 - Uses `npm-run-all` (`run-s`) to sequence the three setup steps.
 - The symlinks script won't overwrite existing non-symlink files (it skips them with a warning).
-- Uses `git-town` with GitHub connector (`gh`) for branch management.
 - Node version pinned via `.nvmrc`.
 
 ## Shell Setup
@@ -46,7 +45,7 @@ The zsh config uses:
 
 ## Cross-platform Notes
 
-On non-macOS systems (e.g. WSL), `npm run macos` is a no-op and only `homebrew/Brewfile` (formula only, no casks) is used.
+On non-macOS systems (e.g. WSL), `npm run macos` is a no-op and the Brewfile checklist only shows formulas.
 
 After first-time setup on macOS, enable Homebrew autoupdate manually:
 

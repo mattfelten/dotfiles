@@ -2,7 +2,8 @@
 """PreToolUse check: keep MR/PR descriptions legible to a reviewer.
 
 Run by ../dispatch.sh, which only starts it when the command mentions `gh pr`
-or `glab mr` (see checks.conf). Reads the hook payload on stdin. Prints a hook
+or `glab mr` (see checks.conf). Only a call the shell will run counts, so a
+script being written that mentions `gh pr create` passes untouched. Reads the hook payload on stdin. Prints a hook
 JSON response to block, or nothing to let the command through.
 
 Handles `gh pr create|edit` and `glab mr create|update`. Pulls the description
@@ -37,8 +38,12 @@ MODEL = os.environ.get("MR_STYLE_MODEL", "sonnet")
 TIMEOUT = int(os.environ.get("MR_STYLE_TIMEOUT", "60"))
 MAX_CHARS = 20000
 
-# Commands that publish a description.
-TRIGGER = re.compile(r"\b(gh\s+pr\s+(?:create|edit)|glab\s+mr\s+(?:create|update))\b")
+# Commands that publish a description, in command position: start of a line or
+# after ; & | ( $( with optional VAR=value prefixes. A mention inside a quoted
+# string or an `echo` doesn't count.
+TRIGGER = re.compile(
+    r"(?:^|[;&|(\n]|\$\()\s*(?:\w+=\S*\s+)*"
+    r"(gh\s+pr\s+(?:create|edit)|glab\s+mr\s+(?:create|update))\b", re.M)
 
 BODY_FLAGS = {"--body", "-b", "--description", "-d", "--notes"}
 FILE_FLAGS = {"--body-file", "-F", "--description-file"}
@@ -277,19 +282,38 @@ def normalize_newlines(text):
     return text
 
 
+def heredoc_spans(text):
+    """Return (start, end) offsets of every heredoc body in `text`."""
+    spans = []
+    for match in re.finditer(r"<<-?\s*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\1[^\n]*\n", text):
+        term = match.group(2)
+        rest = text[match.end():]
+        end = re.search(r"^\s*" + re.escape(term) + r"\s*\)?\s*$", rest, re.M)
+        spans.append((match.end(), match.end() + (end.start() if end else len(rest))))
+    return spans
+
+
 def extract_heredocs(text):
     """Return the bodies of any heredocs in `text`.
 
     Covers the `--body "$(cat <<'EOF' ... EOF)"` idiom, which is how most
     multi-line descriptions actually reach the shell.
     """
-    bodies = []
-    for match in re.finditer(r"<<-?\s*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\1\s*\n", text):
-        term = match.group(2)
-        rest = text[match.end():]
-        end = re.search(r"^\s*" + re.escape(term) + r"\s*$", rest, re.M)
-        bodies.append(rest[:end.start()] if end else rest)
-    return bodies
+    return [text[start:end] for start, end in heredoc_spans(text)]
+
+
+def find_trigger(command):
+    """The first create/update call the shell will actually run.
+
+    Skips matches inside heredoc bodies: a script being written to disk that
+    mentions `gh pr create` is file content, not a command.
+    """
+    spans = heredoc_spans(command)
+    for match in TRIGGER.finditer(command):
+        pos = match.start(1)
+        if not any(start <= pos < end for start, end in spans):
+            return match
+    return None
 
 
 def resolve(value):
@@ -310,12 +334,12 @@ def tokenize(text):
 
 def extract(command):
     """Return (title, description). Either may be None."""
-    trigger = TRIGGER.search(command)
+    trigger = find_trigger(command)
     if not trigger:
         return None, None
     # Only look at the part of the line belonging to the create/update call, so a
     # preceding `git commit -m "$(cat <<EOF ...)"` isn't mistaken for the body.
-    tail = command[trigger.start():]
+    tail = command[trigger.start(1):]
 
     tokens = tokenize(tail)
     title, body = None, None
