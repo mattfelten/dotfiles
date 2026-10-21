@@ -18,7 +18,7 @@ Or `./scripts/bootstrap.sh` after cloning. For future updates, run `npm start`.
 | ---------------------------- | ------------------------------------------------------------- |
 | `bash scripts/bootstrap.sh`  | Run once on fresh clone: NVM/Node + npm install + full setup  |
 | `npm start`                  | Run full setup in order (homebrew, symlinks, sync, macos)     |
-| `npm run homebrew`           | Install Homebrew + Brewfile packages                          |
+| `npm run homebrew`           | Install Homebrew, then pick Brewfile packages from a checklist |
 | `npm run symlinks`           | Symlink dotfiles to ~/                                        |
 | `npm run unsymlink`          | Remove our symlinks from ~/                                   |
 | `npm run sync`               | Install the git-sync launchd agent                            |
@@ -77,9 +77,9 @@ its own plugin cache from that.
 
 ```
 symlinks/       → Files that get symlinked to ~/
-homebrew/       → Brewfile (cross-platform formula), Brewfile.macos (casks + mas, macOS only)
+homebrew/       → Brewfile (everything I might want; picked per machine at install)
 macos-defaults/ → Shell scripts for macOS settings
 scripts/        → The JS that makes it all go
 ```
 
-On non-macOS (e.g. WSL), only the main Brewfile is used and `npm run macos` is skipped.
+On non-macOS (e.g. WSL), casks and mas apps are left out of the checklist and `npm run macos` is skipped.

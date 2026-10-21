@@ -1,11 +1,52 @@
-# Install command-line tools using Homebrew
-# Usage: `brew bundle Brewfile`
-# Cross-platform: formula only (safe on WSL/Linux)
+# Everything I might want on a machine. `npm run homebrew` shows this as a
+# checklist (all selected) so each machine gets only what it needs.
+#
+#   ## Heading      starts a group in the checklist
+#   # comment       ignored
+#   ... # hint      trailing comments show up as hints
+#
+# Casks and mas apps are hidden automatically off macOS.
 
+## Shell
 brew 'antidote'
-brew 'gh'
-brew 'git-town'
-brew 'glab'
-brew 'glow'
 brew 'powerlevel10k'
-brew 'ranger'
+
+## Dev
+brew 'gh'
+brew 'glab'
+cask "claude-code"
+cask "visual-studio-code"
+
+## Communication
+cask "slack"
+cask "zoom" # Ugh
+cask "discord"
+cask "mimestream"
+cask "granola"
+cask "loom"
+
+## Design & capture
+cask "figma"
+cask "cleanshot"
+cask "screen-studio"
+mas "Hand Mirror", id: 1502839586
+
+## Apps
+cask "claude"
+cask "google-chrome"
+cask "spotify"
+mas "Ghostery", id: 6504861501 # Safari ad blocker
+mas "iA Writer", id: 775737590
+mas "mymind", id: 1532801185
+mas "Crouton", id: 1461650987
+mas "Harvest", id: 506189836
+
+## Menu bar & utilities
+cask "thaw"
+mas "Magnet", id: 441258766
+mas "Lungo", id: 1263070803
+mas "Dato", id: 1470584107
+
+# mas apps need an App Store sign-in first.
+# Autoupdate needs to run once after setup, every 12 hours and on every boot:
+# brew autoupdate start 43200 --upgrade --cleanup --immediate --sudo
