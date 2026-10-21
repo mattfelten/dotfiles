@@ -178,7 +178,7 @@ genuinely met, and never for something the reviewer could work out from the code
 
 === How much "why" to expect ===
 
-You are told whether a Jira ticket is linked. The Why section is required either
+You are told whether a ticket (Jira, Linear, Notion, GitHub issue) is linked. The Why section is required either
 way, but its depth changes:
 - Linked: scope and rationale live on the issue. A brief why is correct. Do not
   ask for more.
@@ -363,19 +363,23 @@ def extract(command):
 
 
 TICKET = re.compile(
-    r"(atlassian\.net/browse/|\b(?:RND|ENG|OPS|SEC|PLAT)-\d+\b|"
-    r"^\s*(?:fixes|closes|resolves)\s*:\s*\S)", re.I | re.M)
+    r"(atlassian\.net/browse/|linear\.app/|notion\.(?:so|site)/|"
+    r"github\.com/[^/\s]+/[^/\s]+/issues/\d+|"
+    r"^\s*(?:fixes|closes|resolves)\b\s*:?\s*\S)", re.I | re.M)
+# Issue keys (ABC-123) are case-sensitive, so "utf-8" isn't read as a ticket.
+TICKET_KEY = re.compile(r"\b[A-Z][A-Z0-9]{1,9}-\d+\b")
 
 
 def has_ticket(title, body):
     """Whether an issue is linked, which decides how much 'why' is expected."""
-    return bool(TICKET.search("%s\n%s" % (title or "", body or "")))
+    text = "%s\n%s" % (title or "", body or "")
+    return bool(TICKET.search(text) or TICKET_KEY.search(text))
 
 
 def judge(title, body):
     """Ask the model to read it as a reviewer would. None means 'no opinion'."""
     linked = "yes" if has_ticket(title, body) else "no"
-    text = "Jira ticket linked: %s\n\nTitle: %s\n\nDescription:\n%s" % (
+    text = "Ticket linked: %s\n\nTitle: %s\n\nDescription:\n%s" % (
         linked, title or "(none given)", body[:MAX_CHARS])
 
     env = dict(os.environ)

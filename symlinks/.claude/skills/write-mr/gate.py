@@ -7,7 +7,7 @@ The same check runs automatically on the real create call. Running it here first
 means an unclear description costs a few cents to find out about instead of a
 blocked command half way through publishing.
 
-The title is passed along with the body because a Jira key usually lives in the
+The title is passed along with the body because an issue key usually lives in the
 title, and whether a ticket is linked decides how long the Why should be.
 
 Prints PASS, or FAIL with the critique and exit code 1. If the check itself

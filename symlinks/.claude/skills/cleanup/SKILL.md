@@ -24,6 +24,13 @@ Slack or anywhere else other people read.
 
 Never delete something whose only copy is the thing being deleted.
 
+## Where conventions live
+
+PR rules (reviewer, draft vs ready, auto-merge) and the ticket tracker differ by employer
+and repo, so none are hardcoded here. Read them from, in order: the repo's `CLAUDE.md` /
+`CONTRIBUTING.md`, then the ai-brain sphere's `CLAUDE.md` (e.g. `work/sublime/CLAUDE.md`).
+Missing → ask Matt, then record it there.
+
 ## Arguments
 
 - `/cleanup` — full run.
@@ -48,7 +55,7 @@ git -C <repo> worktree list
 ```
 
 Also collect, in the same pass:
-- Open MRs/PRs authored this session — `glab mr list --author=@me` / `gh pr list --author=@me`
+- Open PRs/MRs authored this session — `gh pr list --author=@me` (or `glab mr list --author=@me` on GitLab)
 - Background shells still running, dev servers, watchers started this session
 - Scheduled work created this session — `CronList`, any `/loop` still armed
 - Background agents/tasks not yet reported back
@@ -80,7 +87,7 @@ outcomes — never leave one un-dispositioned:**
 | Outcome | What it means |
 |---|---|
 | **Finish now** | Small enough to do in this run. Do it. |
-| **Defer** | Real work, not now. It must get a durable home *in this run* — a Jira ticket via the Atlassian MCP, or an ai-brain project note. A deferral with no artifact is a dropped thread wearing a disguise. |
+| **Defer** | Real work, not now. It must get a durable home *in this run* — a ticket in the sphere's tracker (see **Where conventions live** below), or an ai-brain project note. A deferral with no artifact is a dropped thread wearing a disguise. |
 | **Drop** | Confirmed not worth doing. Say so out loud so the decision is on the record. |
 
 If any thread lands on "finish now" or needs a decision from Matt, **stop here** and get
@@ -103,18 +110,15 @@ test values, scratch files written into the repo instead of `$CLAUDE_JOB_DIR/tmp
 
 - Merged → confirm the post-merge pipeline on the target branch is green. Merged with a
   red `main` is not done.
-- Open → it must be ready (not draft), have a reviewer, and have auto-merge armed. For
-  MissionCloud repos that means `--reviewer djbowers` and arming via the raw API:
-  ```sh
-  glab api --method PUT "projects/<id>/merge_requests/<iid>/merge?merge_when_pipeline_succeeds=true"
-  ```
-  Verify with `merge_when_pipeline_succeeds` + `merge_user`, **not** `auto_merge_enabled`.
-  See the `mr-defaults-mission` memory for the full checklist and the known `glab` refusals.
+- Open → it must match the repo's PR conventions: ready vs draft, reviewer, auto-merge.
+  Those are per-sphere (see **Where conventions live**). If none are recorded yet, don't
+  invent them — surface the PR to Matt and ask what the convention is, then record the
+  answer in the sphere's `CLAUDE.md` so the next run knows.
 - Open, green, armed, waiting on review → **that is a valid end state.** Note it and move on.
 - Open and red, or armed hours ago and never fired → surface it; that's a real loose end.
 
-**Tickets.** If the session maps to a Jira issue, transition it and/or comment the outcome
-via the Atlassian MCP. A merged MR with a ticket still in "In Progress" is an open thread.
+**Tickets.** If the session maps to a ticket, transition it and/or comment the outcome
+in that sphere's tracker. A merged PR with a ticket still in "In Progress" is an open thread.
 
 ---
 
@@ -220,16 +224,16 @@ One compact block. Scannable, no prose.
 ```
 CLEANUP — <workspace>
 
-Threads      3 found → 1 finished, 1 deferred (PROJ-482), 1 dropped
+Threads      3 found → 1 finished, 1 deferred (ticket created), 1 dropped
 Work         2 repos clean · 1 commit pushed
-MRs          !2501 merged (main green) · !2503 open, green, armed, w/ DJ
-Tickets      PROJ-482 created · PROJ-471 → Done
+PRs          #501 merged (main green) · #503 open, green, awaiting review
+Tickets      1 created · 1 → Done
 Memory       ai-brain: +1 note · updated 1 · deleted 2 (stale) · archived 1 project
-             harness: pruned mr-defaults-mission → folded into ai-brain
+             harness: pruned 1 note → folded into ai-brain
 Running      stopped 1 dev server, 1 loop
 Teardown     removed 1 worktree + branch · 1 kept (unmerged commits)
 
-⚠ Needs you   !2503 armed 4h ago, hasn't fired — DJ hasn't reviewed
+⚠ Needs you   #503 open 4h, no reviewer activity
 ```
 
 End with the open items only. If nothing needs Matt, say that in one line.
