@@ -94,3 +94,7 @@
 	autoStash = true
 [credential "https://gitlab.com"]
 	helper = !glab auth git-credential
+
+# Keep last so it overrides user.email above
+[includeIf "gitdir:~/Projects/sublime/"]
+	path = ~/.gitconfig-sublime
