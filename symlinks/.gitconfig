@@ -25,6 +25,7 @@
         aca = !git add -A && git commit --amend
 	ap = add -p
 	co = checkout
+	br = branch
 	bra = branch -a
 	c = commit
 	g = grep --break --heading --line-number
