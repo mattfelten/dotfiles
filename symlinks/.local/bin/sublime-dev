@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# sublime-dev
+# Run the Sublime dashboard locally: start the Dockerized backend
+# (sublime-platform), then the frontend dev server on http://localhost:3000.
+# Ctrl-C stops both. Data in the backend DB is kept between runs.
+set -euo pipefail
+
+platform="$HOME/Projects/sublime/sublime-platform"
+frontend="$HOME/Projects/sublime/sublime-frontend"
+
+if ! docker info >/dev/null 2>&1; then
+  echo "Starting Docker..."
+  open -a Docker
+  until docker info >/dev/null 2>&1; do sleep 2; done
+fi
+
+echo "Starting backend..."
+docker compose --project-directory "$platform" up -d
+trap 'echo; echo "Stopping backend..."; docker compose --project-directory "$platform" stop' EXIT
+trap 'exit 130' INT TERM
+
+cd "$frontend"
+export NVM_DIR="$HOME/.nvm"
+source "$NVM_DIR/nvm.sh"
+nvm use >/dev/null
+pnpm dashboard:dev
