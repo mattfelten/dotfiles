@@ -43,3 +43,10 @@ fpath=(/Users/matt.felten/.docker/completions $fpath)
 autoload -Uz compinit
 (( ${+_comps[docker]} )) || compinit
 # End of Docker CLI completions
+
+# Use Figma API token if there is one
+# To store, run `security add-generic-password -a "$USER" -s figma-api-token -w`
+if _figma_token="$(security find-generic-password -a "$USER" -s figma-api-token -w 2>/dev/null)"; then
+  export FIGMA_TOKEN="$_figma_token"
+fi
+unset _figma_token
