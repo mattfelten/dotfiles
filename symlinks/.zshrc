@@ -50,3 +50,7 @@ if _figma_token="$(security find-generic-password -a "$USER" -s figma-api-token 
   export FIGMA_TOKEN="$_figma_token"
 fi
 unset _figma_token
+
+# Set default editor to nano
+export EDITOR="nano"
+export VISUAL="nano"
