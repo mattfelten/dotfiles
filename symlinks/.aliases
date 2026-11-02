@@ -26,4 +26,4 @@ alias rhythm="cd $PERSONAL_DIR/rhythm.studio"
 # ====
 export SUBLIME_DIR=$DEVELOPMENT_DIR/sublime
 alias mission="cd $SUBLIME_DIR"
-alias agents="cd $DEVELOPMENT_DIR && claude agents -model claude-opus-5-5"
+alias agents="cd $DEVELOPMENT_DIR && claude agents --model claude-opus-5-5"
